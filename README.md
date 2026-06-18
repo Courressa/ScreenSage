@@ -28,5 +28,3 @@ Users can suggest new collection ideas. Accepted suggestions get credited by nam
 - **Payments**: Stripe Checkout + PayPal Buttons
 - **Hosting**: Vercel
 - **Routing**: React Router
-
-## Project Structure
