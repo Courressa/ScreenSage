@@ -1,16 +1,32 @@
-# React + Vite
+# ScreenSage
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Premium AI-Generated Wallpapers & Videos for Phones, Tablets & Desktops**
 
-Currently, two official plugins are available:
+Beautiful, original AI art for your screens. One-time purchases only.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**Live Site Under Construction**: https://screensage.fyi
 
-## React Compiler
+## About
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+ScreenSage offers curated collections of high-quality AI-generated wallpapers and short videos. 
 
-## Expanding the ESLint configuration
+Users can suggest new collection ideas. Accepted suggestions get credited by naming the collection after the contributor.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Features
+
+- Browse curated wallpaper collections
+- Responsive previews for phone / tablet / desktop
+- One-time purchase via Stripe or PayPal
+- Suggestion form for future collections
+- Fully responsive design
+
+## Tech Stack
+
+- **Frontend**: Vite + React + JavaScript
+- **Styling**: CSS
+- **Data**: `src/data/data.js`
+- **Payments**: Stripe Checkout + PayPal Buttons
+- **Hosting**: Vercel
+- **Routing**: React Router
+
+## Project Structure
