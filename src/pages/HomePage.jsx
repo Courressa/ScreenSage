@@ -1,4 +1,4 @@
-import CollectionGrid from '../components/collections/CollectionGrid'
+import CollectionGrid from '../components/display/DisplayGrid'
 import '../styles/collections.css'
 
 export default function HomePage() {

@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import AddToCartButton from '../components/cart/AddToCartButton'
-import DevicePreview from '../components/collections/DevicePreview'
+import DevicePreview from '../components/display/DevicePreview'
 import { formatCreator, formatPrice, getProductBySlug } from '../data/data'
 import '../styles/collections.css'
 

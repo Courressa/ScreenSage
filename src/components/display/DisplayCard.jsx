@@ -3,7 +3,7 @@ import AddToCartButton from '../cart/AddToCartButton'
 import { formatCreator, formatPrice } from '../../data/data'
 import '../../styles/collections.css'
 
-export default function CollectionCard({ collection }) {
+export default function DisplayCard({ collection }) {
   const assetLabel = collection.hasVideo
     ? `${collection.imageCount} images + video`
     : `${collection.imageCount} images`
