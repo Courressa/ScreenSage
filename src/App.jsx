@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage'
 import CollectionPage from './pages/CollectionPage'
 import SuggestPage from './pages/SuggestPage'
 import CartPage from './pages/CartPage'
+import BrowsePage from './pages/BrowsePage'
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
         <Route path="collections/:slug" element={<CollectionPage />} />
         <Route path="suggest" element={<SuggestPage />} />
         <Route path="cart" element={<CartPage />} />
+        <Route path="browse" element={<BrowsePage />} />
       </Route>
     </Routes>
   )
