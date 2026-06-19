@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { getCollectionBySlug } from '../data/data'
+import { getProductBySlug } from '../data/data'
 import { CartContext, CART_STORAGE_KEY } from './cartContext'
 
 function loadCart() {
@@ -22,7 +22,7 @@ export default function CartProvider({ children }) {
 
   const value = useMemo(() => {
     const items = slugs
-      .map((slug) => getCollectionBySlug(slug))
+      .map((slug) => getProductBySlug(slug))
       .filter(Boolean)
 
     const total = items.reduce((sum, item) => sum + item.price, 0)

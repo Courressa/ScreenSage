@@ -1,12 +1,12 @@
 import { Link, useParams } from 'react-router-dom'
 import AddToCartButton from '../components/cart/AddToCartButton'
 import DevicePreview from '../components/collections/DevicePreview'
-import { formatCreator, formatPrice, getCollectionBySlug } from '../data/data'
+import { formatCreator, formatPrice, getProductBySlug } from '../data/data'
 import '../styles/collections.css'
 
 export default function CollectionPage() {
   const { slug } = useParams()
-  const collection = getCollectionBySlug(slug)
+  const collection = getProductBySlug(slug)
 
   if (!collection) {
     return (
