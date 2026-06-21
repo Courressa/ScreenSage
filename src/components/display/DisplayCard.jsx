@@ -11,7 +11,7 @@ export default function DisplayCard({ product }) {
   return (
     <article className="display-card">
       <Link
-        to={`/collections/${product.slug}`}
+        to={`/products/${product.slug}`}
         className="display-card__link"
       >
         <div className="display-card__image-wrap">

@@ -42,7 +42,7 @@ export default function HomePage() {
         <h2>Collections</h2>
         <DisplayGrid products={firstFewCollections} />
         <Link
-          to="/browse?type=collection"
+          to="/products?type=collection"
           className="view-all-button"
           onClick={() => { window.scrollTo(0, 0); }}
         >View All Collections</Link>
@@ -51,7 +51,7 @@ export default function HomePage() {
         <h2>Individual</h2>
         <DisplayGrid products={firstFewIndividuals} />
         <Link
-          to="/browse?type=individual"
+          to="/products?type=individual"
           className="view-all-button"
           onClick={() => { window.scrollTo(0, 0); }}
         >View All Individuals</Link>

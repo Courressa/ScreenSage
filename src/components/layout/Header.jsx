@@ -22,7 +22,7 @@ export default function Header() {
           Home
         </NavLink>
         <NavLink
-          to="/browse"
+          to="/products"
           className={({ isActive }) =>
             `site-header__link${isActive ? ' site-header__link--active' : ''}`
           }
