@@ -3,7 +3,7 @@ import DisplayCard from './DisplayCard'
 export default function DisplayGrid({products = []}) {
 
   return (
-    <div className="collection-grid">
+    <div className="display-grid">
       {products.length > 0 ? (
         products.map(product => {
           return <DisplayCard key={product.id} product={product} />

@@ -2,7 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import AddToCartButton from '../components/cart/AddToCartButton'
 import DevicePreview from '../components/display/DevicePreview'
 import { formatCreator, formatPrice, getProductBySlug } from '../data/data'
-import '../styles/collections.css'
+import '../styles/display.css'
 
 export default function CollectionPage() {
   const { slug } = useParams()
@@ -26,11 +26,11 @@ export default function CollectionPage() {
 
   return (
     <div className="page">
-      <div className="collection-detail__header">
-        <h1 className="collection-detail__title">{collection.title}</h1>
-        <p className="collection-detail__creator">{formatCreator(collection)}</p>
-        <p className="collection-detail__description">{collection.description}</p>
-        <div className="collection-detail__meta">
+      <div className="display-detail__header">
+        <h1 className="display-detail__title">{collection.title}</h1>
+        <p className="display-detail__creator">{formatCreator(collection)}</p>
+        <p className="display-detail__description">{collection.description}</p>
+        <div className="display-detail__meta">
           <span className="badge">{collection.category}</span>
           {collection.mood.map((m) => (
             <span key={m} className="badge badge--muted">
@@ -39,16 +39,16 @@ export default function CollectionPage() {
           ))}
           {collection.hasVideo && <span className="badge">Video included</span>}
         </div>
-        <p className="collection-detail__price">{formatPrice(collection.price)}</p>
+        <p className="display-detail__price">{formatPrice(collection.price)}</p>
       </div>
 
-      <div className="collection-detail__layout">
+      <div className="display-detail__layout">
         <DevicePreview previews={collection.previews} title={collection.title} />
         <div>
-          <div className="collection-detail__purchase">
-            <AddToCartButton collection={collection} />
+          <div className="display-detail__purchase">
+            <AddToCartButton item={collection} />
           </div>
-          <div className="collection-detail__tags">
+          <div className="display-detail__tags">
             <span>{assetLabel}</span>
             {collection.resolutions.map((r) => (
               <span key={r}>{r}</span>

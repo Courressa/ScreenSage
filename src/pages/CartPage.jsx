@@ -34,8 +34,8 @@ export default function CartPage() {
       <div className="cart-page__layout">
         <section className="cart-page__items" aria-label="Cart items">
           <ul className="cart-list">
-            {items.map((collection) => (
-              <CartItem key={collection.slug} collection={collection} />
+            {items.map((item) => (
+              <CartItem key={item.slug} item={item} />
             ))}
           </ul>
         </section>

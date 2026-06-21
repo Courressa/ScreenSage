@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import '../../styles/collections.css'
+import '../../styles/display.css'
 
 const DEVICES = [
   { key: 'phone', label: 'Phone' },

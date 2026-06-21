@@ -3,15 +3,15 @@ import { Link } from 'react-router-dom'
 import { useCart } from '../../context/useCart'
 import '../../styles/cart.css'
 
-export default function AddToCartButton({ collection, compact = false }) {
+export default function AddToCartButton({ item, compact = false }) {
   const { isInCart, addToCart } = useCart()
   const [justAdded, setJustAdded] = useState(false)
-  const inCart = isInCart(collection.slug)
+  const inCart = isInCart(item.slug)
 
   function handleAdd(event) {
     event.preventDefault()
     event.stopPropagation()
-    addToCart(collection)
+    addToCart(item)
     setJustAdded(true)
     setTimeout(() => setJustAdded(false), 2000)
   }

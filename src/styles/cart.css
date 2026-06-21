@@ -30,11 +30,11 @@
   border-color: #22c55e;
 }
 
-.collection-card__actions {
+.display-card__actions {
   padding: 0 1.25rem 1.25rem;
 }
 
-.collection-card__link {
+.display-card__link {
   display: flex;
   flex-direction: column;
   flex: 1;

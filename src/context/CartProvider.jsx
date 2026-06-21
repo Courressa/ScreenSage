@@ -32,9 +32,9 @@ export default function CartProvider({ children }) {
       count: items.length,
       total,
       isInCart: (slug) => slugs.includes(slug),
-      addToCart: (collection) => {
+      addToCart: (item) => {
         setSlugs((prev) =>
-          prev.includes(collection.slug) ? prev : [...prev, collection.slug],
+          prev.includes(item.slug) ? prev : [...prev, item.slug],
         )
       },
       removeFromCart: (slug) => {

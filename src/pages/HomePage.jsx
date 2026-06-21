@@ -1,7 +1,7 @@
 import DisplayGrid from '../components/display/DisplayGrid'
 import { products } from '../data/data'
 import { Link } from 'react-router-dom'
-import '../styles/collections.css'
+import '../styles/display.css'
 
 export default function HomePage() {
   const firstFewCollections = products.filter(product => product.type === 'collection').slice(0, 6);
