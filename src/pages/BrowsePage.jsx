@@ -1,11 +1,40 @@
-import { useState } from "react";
-import Filter from "../components/filter/filter";
+import { useState, useMemo } from "react";
+import Filter from "../components/filter/Filter";
+import { products } from "../data/data";
+import DisplayGrid from "../components/display/DisplayGrid";
 
 export default function BrowsePage() {
-    const [type, setType] = useState("all");
-    const [categorySelected, setCategorySelected] = useState("");
-    const [moodSelected, setMoodSelected] = useState("");
-    const [hasVideo, setHasVideo] = useState(true);
+  const [type, setType] = useState("all");
+  const [categorySelected, setCategorySelected] = useState("");
+  const [moodSelected, setMoodSelected] = useState("");
+  const [hasVideo, setHasVideo] = useState(false);
+
+  // Main filtering logic using useMemo - it caches the filtered products and only recalculates when the dependencies change
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) => {
+      // Type filter
+      if (type !== "all" && product.type !== type) {
+        return false
+      }
+
+      // Category filter
+      if (categorySelected && product.category !== categorySelected) {
+        return false
+      }
+
+      // Mood filter (at least one matching mood)
+      if (moodSelected && !product.mood.includes(moodSelected)) {
+        return false
+      }
+
+      // Has Video filter
+      if (hasVideo && !product.hasVideo) {
+        return false
+      }
+
+      return true
+    })
+  }, [type, categorySelected, moodSelected, hasVideo]);
 
   return (
     <div className="page browse">
@@ -20,12 +49,11 @@ export default function BrowsePage() {
         hasVideo={hasVideo}
         setHasVideo={setHasVideo}
       />
-      <div className="filtered">
-        <p>Filtered by: {type}</p>
-        <p>Category: {categorySelected}</p>
-        <p>Mood: {moodSelected}</p>
-        <p>Has Video: {hasVideo ? "Yes" : "No"}</p>
+      <div className="filtered-results">
+        <p>Showing {filteredProducts.length} items</p>
       </div>
+
+      <DisplayGrid products={filteredProducts} />
     </div>
   )
 }
