@@ -13,7 +13,7 @@ export default function ProductPage() {
       <div className="page not-found">
         <h1>Product not found</h1>
         <p>The product you&apos;re looking for doesn&apos;t exist.</p>
-        <Link to="/" className="btn btn--primary">
+        <Link to="/products" className="btn btn--primary">
           Back to products
         </Link>
       </div>

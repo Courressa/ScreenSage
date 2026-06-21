@@ -38,21 +38,25 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section aria-label="Collections">
+      <section aria-label="Collections" className="product-showcase">
         <h2>Collections</h2>
-        <DisplayGrid products={firstFewCollections} />
+        <div className="product-showcase__home">
+          <DisplayGrid products={firstFewCollections} />
+        </div>
         <Link
           to="/products?type=collection"
-          className="view-all-button"
+          className="btn btn--primary"
           onClick={() => { window.scrollTo(0, 0); }}
         >View All Collections</Link>
       </section>
-      <section aria-label="Individual">
+      <section aria-label="Individual" className="product-showcase">
         <h2>Individual</h2>
-        <DisplayGrid products={firstFewIndividuals} />
+        <div className="product-showcase__home">
+          <DisplayGrid products={firstFewIndividuals} />
+        </div>
         <Link
           to="/products?type=individual"
-          className="view-all-button"
+          className="btn btn--primary"
           onClick={() => { window.scrollTo(0, 0); }}
         >View All Individuals</Link>
       </section>

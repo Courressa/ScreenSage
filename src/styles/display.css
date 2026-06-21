@@ -336,6 +336,18 @@
   display: block;
 }
 
+.product-showcase {
+  margin-bottom: 3.5rem;
+}
+
+.product-showcase__home {
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background: linear-gradient(to bottom, rgba(255, 0, 149, 0), rgba(234, 251, 255, 0.074));
+
+}
+
 @media (max-width: 900px) {
   .how-it-works {
     grid-template-columns: 1fr;
