@@ -1,10 +1,17 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Filter from "../components/filter/Filter";
 import { products } from "../data/data";
 import DisplayGrid from "../components/display/DisplayGrid";
 
 export default function BrowsePage() {
-  const [type, setType] = useState("all");
+  const [searchParams] = useSearchParams();
+  const initialType = searchParams.get("type") || "all";
+  const [type, setType] = useState(initialType);
+  useEffect(() => {
+    setType(searchParams.get("type") || "all");
+  }, [searchParams]);
+  
   const [categorySelected, setCategorySelected] = useState("");
   const [moodSelected, setMoodSelected] = useState("");
   const [hasVideo, setHasVideo] = useState(false);

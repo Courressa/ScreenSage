@@ -1,7 +1,12 @@
-import CollectionGrid from '../components/display/DisplayGrid'
+import DisplayGrid from '../components/display/DisplayGrid'
+import { products } from '../data/data'
+import { Link } from 'react-router-dom'
 import '../styles/collections.css'
 
 export default function HomePage() {
+  const firstFewCollections = products.filter(product => product.type === 'collection').slice(0, 6);
+  const firstFewIndividuals = products.filter(product => product.type === 'individual').slice(0, 6);
+
   return (
     <div className="page">
       <section className="hero">
@@ -19,7 +24,7 @@ export default function HomePage() {
         <div className="how-it-works__step">
           <span className="how-it-works__number">1</span>
           <p className="how-it-works__label">Browse</p>
-          <p className="how-it-works__desc">Explore curated wallpaper collections</p>
+          <p className="how-it-works__desc">Explore curated wallpaper</p>
         </div>
         <div className="how-it-works__step">
           <span className="how-it-works__number">2</span>
@@ -34,7 +39,22 @@ export default function HomePage() {
       </section>
 
       <section aria-label="Collections">
-        <CollectionGrid />
+        <h2>Collections</h2>
+        <DisplayGrid products={firstFewCollections} />
+        <Link
+          to="/browse?type=collection"
+          className="view-all-button"
+          onClick={() => { window.scrollTo(0, 0); }}
+        >View All Collections</Link>
+      </section>
+      <section aria-label="Individual">
+        <h2>Individual</h2>
+        <DisplayGrid products={firstFewIndividuals} />
+        <Link
+          to="/browse?type=individual"
+          className="view-all-button"
+          onClick={() => { window.scrollTo(0, 0); }}
+        >View All Individuals</Link>
       </section>
     </div>
   )
