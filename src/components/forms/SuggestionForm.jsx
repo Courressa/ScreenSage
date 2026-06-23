@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
+import { useForm, ValidationError } from '@formspree/react';
 import '../../styles/forms.css'
 
 const INITIAL_FORM = {
@@ -11,7 +12,7 @@ const INITIAL_FORM = {
 export default function SuggestionForm() {
   const [form, setForm] = useState(INITIAL_FORM)
   const [errors, setErrors] = useState({})
-  const [submitted, setSubmitted] = useState(false)
+  const [state, handleSubmit] = useForm(import.meta.env.VITE_FORMSPREE_ID);
 
   function handleChange(event) {
     const { name, value } = event.target
@@ -35,17 +36,20 @@ export default function SuggestionForm() {
     return nextErrors
   }
 
-  function handleSubmit(event) {
+  function handleFormSubmit(event) {
     event.preventDefault()
+
     const nextErrors = validate()
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors)
       return
     }
-    setSubmitted(true)
+
+    setErrors({})
+    handleSubmit(event)
   }
 
-  if (submitted) {
+  if (state.succeeded) {
     return (
       <div className="form-success">
         <h2>Thank you, {form.name}!</h2>
@@ -58,7 +62,7 @@ export default function SuggestionForm() {
   }
 
   return (
-    <form className="suggestion-form" onSubmit={handleSubmit} noValidate>
+    <form className="suggestion-form" onSubmit={handleFormSubmit} noValidate>
       <p className="suggestion-form__intro">
         Have an idea for a new wallpaper collection? Share it with us. Accepted
         suggestions are credited by naming the collection after the contributor.
