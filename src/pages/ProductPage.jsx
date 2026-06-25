@@ -1,10 +1,16 @@
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import AddToCartButton from '../components/cart/AddToCartButton'
 import DevicePreview from '../components/display/DevicePreview'
+import UniqueImageList from '../components/display/UniqueImageList'
 import { formatCreator, formatPrice, getProductBySlug } from '../data/data'
 import '../styles/display.css'
 
 export default function ProductPage() {
+  //Retrieved from device preview
+  const [selectedDevice, setSelectedDevice] = useState('desktop');
+  //Retrieved from unique image list
+  const [selectedImageInd, setSelectedImageInd] = useState(0);
   const { slug } = useParams()
   const item = getProductBySlug(slug)
 
@@ -22,7 +28,15 @@ export default function ProductPage() {
 
   const assetLabel = item.hasVideo
     ? `${item.imageCount} wallpapers + video`
-    : `${item.imageCount} wallpapers`
+    : `${item.imageCount} wallpapers`;
+
+  const handleSelectedDevice = (device) => {
+    setSelectedDevice(device);
+  }
+
+  const handleSelectedImageInd = (image) => {
+    setSelectedImageInd(image);
+  }
 
   return (
     <div className="page">
@@ -43,7 +57,12 @@ export default function ProductPage() {
       </div>
 
       <div className="display-detail__layout">
-        <DevicePreview previews={item.previews} title={item.title} />
+        <DevicePreview
+          previews={item.devicePreviews} 
+          title={item.title}
+          onSelectDevice={handleSelectedDevice}
+          selectedImageInd={selectedImageInd}
+          />
         <div>
           <div className="display-detail__purchase">
             <AddToCartButton item={item} />
@@ -61,6 +80,12 @@ export default function ProductPage() {
             ))}
           </div>
         </div>
+      </div>
+      <div className="display-preview-gallery">
+        <UniqueImageList
+          previews={item.devicePreviews} 
+          onSelectImageInd={handleSelectedImageInd} 
+          selectedDevice={selectedDevice} />
       </div>
     </div>
   )

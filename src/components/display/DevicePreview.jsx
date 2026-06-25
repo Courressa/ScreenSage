@@ -7,9 +7,10 @@ const DEVICES = [
   { key: 'desktop', label: 'Desktop' },
 ]
 
-export default function DevicePreview({ previews, title }) {
-  const [activeDevice, setActiveDevice] = useState('phone')
+export default function DevicePreview({ previews, title, onSelectDevice, selectedImageInd }) {
+  const [activeDevice, setActiveDevice] = useState('desktop')
 
+  console.log(selectedImageInd);
   return (
     <div className="device-preview">
       <div className="device-preview__tabs" role="tablist" aria-label="Device preview">
@@ -22,7 +23,10 @@ export default function DevicePreview({ previews, title }) {
             className={`device-preview__tab${
               activeDevice === key ? ' device-preview__tab--active' : ''
             }`}
-            onClick={() => setActiveDevice(key)}
+            onClick={() => {
+              setActiveDevice(key)
+              onSelectDevice(key)
+            }}
           >
             {label}
           </button>
@@ -30,11 +34,15 @@ export default function DevicePreview({ previews, title }) {
       </div>
       <div className="device-preview__frame">
         <div className={`device-preview__screen device-preview__screen--${activeDevice}`}>
+          {previews[activeDevice][selectedImageInd] ? 
           <img
-            src={previews[activeDevice]}
+            src={previews[activeDevice][selectedImageInd]}
             alt={`${title} preview on ${activeDevice}`}
             className="device-preview__image"
-          />
+          /> :
+          <p>
+            Selected wallpaper is not available for this device.
+          </p>}
         </div>
       </div>
     </div>
