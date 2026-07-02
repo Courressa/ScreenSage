@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useForm, ValidationError } from '@formspree/react';
 import '../../styles/forms.css'
 
@@ -10,43 +10,12 @@ const INITIAL_FORM = {
 }
 
 export default function SuggestionForm() {
-  const [form, setForm] = useState(INITIAL_FORM)
-  const [errors, setErrors] = useState({})
+  const [form, setForm] = useState(INITIAL_FORM);
   const [state, handleSubmit] = useForm(import.meta.env.VITE_FORMSPREE_ID);
 
   function handleChange(event) {
     const { name, value } = event.target
     setForm((prev) => ({ ...prev, [name]: value }))
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }))
-    }
-  }
-
-  function validate() {
-    const nextErrors = {}
-
-    if (!form.name.trim()) nextErrors.name = 'Name is required.'
-    if (!form.email.trim()) {
-      nextErrors.email = 'Email is required.'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      nextErrors.email = 'Enter a valid email address.'
-    }
-    if (!form.idea.trim()) nextErrors.idea = 'Collection idea is required.'
-
-    return nextErrors
-  }
-
-  function handleFormSubmit(event) {
-    event.preventDefault()
-
-    const nextErrors = validate()
-    if (Object.keys(nextErrors).length > 0) {
-      setErrors(nextErrors)
-      return
-    }
-
-    setErrors({})
-    handleSubmit(event)
   }
 
   if (state.succeeded) {
@@ -62,13 +31,13 @@ export default function SuggestionForm() {
   }
 
   return (
-    <form className="suggestion-form" onSubmit={handleFormSubmit} noValidate>
+    <form className="suggestion-form" onSubmit={handleSubmit} noValidate>
       <p className="suggestion-form__intro">
         Have an idea for a new wallpaper collection? Share it with us. Accepted
         suggestions are credited by naming the collection after the contributor.
       </p>
 
-      <div className={`form-group${errors.name ? ' form-group--error' : ''}`}>
+      <div className="form-group">
         <label htmlFor="name">Your name</label>
         <input
           id="name"
@@ -78,10 +47,14 @@ export default function SuggestionForm() {
           onChange={handleChange}
           autoComplete="name"
         />
-        {errors.name && <p className="form-error">{errors.name}</p>}
+        <ValidationError 
+          field="name"
+          prefix="Name"
+          errors={state.errors}
+        />
       </div>
 
-      <div className={`form-group${errors.email ? ' form-group--error' : ''}`}>
+      <div className="form-group">
         <label htmlFor="email">Email</label>
         <input
           id="email"
@@ -91,10 +64,14 @@ export default function SuggestionForm() {
           onChange={handleChange}
           autoComplete="email"
         />
-        {errors.email && <p className="form-error">{errors.email}</p>}
+        <ValidationError 
+          field="email"
+          prefix="Email"
+          errors={state.errors}
+        />
       </div>
 
-      <div className={`form-group${errors.idea ? ' form-group--error' : ''}`}>
+      <div className="form-group">
         <label htmlFor="idea">Collection idea</label>
         <input
           id="idea"
@@ -104,7 +81,11 @@ export default function SuggestionForm() {
           onChange={handleChange}
           placeholder="e.g. Neon Tokyo alleyways at midnight"
         />
-        {errors.idea && <p className="form-error">{errors.idea}</p>}
+        <ValidationError 
+          field="idea"
+          prefix="Idea"
+          errors={state.errors}
+        />
       </div>
 
       <div className="form-group">
@@ -118,8 +99,12 @@ export default function SuggestionForm() {
         />
       </div>
 
-      <button type="submit" className="btn btn--primary">
-        Submit suggestion
+      <button
+        type="submit"
+        className="btn btn--primary"
+        disabled={state.submitting}
+      >
+        {state.submitting ? "Sending..." : "Submit suggestion"}
       </button>
     </form>
   )
