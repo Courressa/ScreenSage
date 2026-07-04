@@ -1,3 +1,5 @@
+/* global process */ //This is for process.env to avoid red squiggly lines in VS Code and let it know this is a Node.js project
+
 import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';

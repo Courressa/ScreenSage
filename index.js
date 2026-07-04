@@ -1,4 +1,5 @@
-//import products from './src/data/data.js';
+/* global process */ //This is for process.env to avoid red squiggly lines in VS Code and let it know this is a Node.js project
+
 import healthRouter from './server/routes/healthRoutes.js';
 import authRouter from './server/routes/authRoutes.js';
 import connectDB from './server/data/database.js';

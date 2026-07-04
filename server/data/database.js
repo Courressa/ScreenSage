@@ -1,3 +1,6 @@
+/* global process */ //This is for process.env to avoid red squiggly lines in VS Code and let it know this is a Node.js project
+
+
 import mongoose from "mongoose";
 
 export default async function connectDB() {
