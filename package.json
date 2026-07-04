@@ -12,7 +12,10 @@
   },
   "dependencies": {
     "@formspree/react": "^3.0.0",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.7.3",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
