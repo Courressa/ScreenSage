@@ -12,6 +12,11 @@ const PORT = process.env.PORT || 3000;
 //Connect to MongoDB
 await connectDB();
 
+//Middleware to parse JSON request bodies and URL-encoded data
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+
 //Test
 app.get('/', (req, res) => {
     res.send("Helloooo~");

@@ -3,6 +3,7 @@
 import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import 'dotenv/config';
 
 const secretKey = process.env.JWT_SECRET;
 const SALT_ROUNDS = 10;
@@ -10,6 +11,25 @@ const SALT_ROUNDS = 10;
 export const registerUser = async (req, res) => {
     try {
         const { username, email, password } = req.body;
+
+        //Checks if there is content in the username, email, and password fields
+        if (!username || !email || !password) {
+            return res.status(400).json({ message: "Please fill in all required fields" });
+        }
+
+        //Checks if the email is already registered in the database
+        const existingUser = await User.findOne({ email });
+        
+        if (existingUser) {
+            return res.status(409).json({ message: "Email is already registered" });
+        }
+
+        //Checks if username is already taken in the database
+        const existingUsername = await User.findOne({ username });
+
+        if (existingUsername) {
+            return res.status(409).json({ message: "Username is already taken" });
+        }
 
         //Hash the password before saving it to the database 
         const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
@@ -27,7 +47,7 @@ export const registerUser = async (req, res) => {
         res.status(201).json({ message: "User registered successfully" });
     } catch (error) {
         console.error("Error registering user:", error);
-        res.status(500).json({ message: "Registration failed" });
+        res.status(500).json({ message: "Registration failed. Internal server error." });
     }
 }
 
@@ -36,7 +56,7 @@ export const loginUser = async (req, res) => {
         const { email, password } = req.body;
 
         //Find user by email
-        const user = await User.find(email);
+        const user = await User.findOne({ email });
 
         //Check if the user exists
         if (!user) {
@@ -48,10 +68,11 @@ export const loginUser = async (req, res) => {
 
         //Check if the password matches
         if (!passwordMatch) {
-            return res.status(401).json({ message: "Invalid login credentials"})
+            return res.status(401).json({ message: "Invalid login credentials"});
         }
 
         //Create a JWT token for authenticated user
+        console.log("JWT secret:", secretKey);
         const token = jwt.sign({userId: user._id}, secretKey, {expiresIn: "1h"});
 
         //Send the token in the response
@@ -67,6 +88,6 @@ export const loginUser = async (req, res) => {
         });
     } catch (error) {
         console.error("Error logging in user:", error);
-        res.status(500).json({ message: "Login failed" });
+        res.status(500).json({ message: "Login failed. Internal server error." });
     }
 }
