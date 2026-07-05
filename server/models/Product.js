@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
-const productSchema = new mongoose.Schema({
+const productSchema = new mongoose.Schema(
+    {
         id: { type: Number, required: true, unique: true },
         type: { type:String, required: true, enum: ['collection', 'individual'] },
         slug: { type:String, required: true, unique: true },
@@ -26,8 +27,10 @@ const productSchema = new mongoose.Schema({
         devices: [{ type: String, enum:['phone', 'tablet', 'desktop'] }],
         resolutions: [{ type: String }],
         stripePriceId: { type: String },
-        paypalProductId: { type: String },
+        paypalProductId: { type: String }
+    }, {
         timestamps: true
-});
+    }
+);
 
 export default mongoose.model("Product", productSchema);
