@@ -1,14 +1,39 @@
 /* global process */ //This is for process.env to avoid red squiggly lines in VS Code and let it know this is a Node.js project
 
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+
 import healthRouter from './server/routes/healthRoutes.js';
 import authRouter from './server/routes/authRoutes.js';
 import productRoutes from './server/routes/productRoutes.js';
 import connectDB from './server/data/database.js';
-import express from 'express';
-import 'dotenv/config';
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// ====================== CORS CONFIG ======================
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+    ? process.env.ALLOWED_ORIGINS.split(',')
+    : ['http://localhost:5173', 'http://localhost:3000'];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        // Allow requests with no origin (Postman, curl, mobile apps, etc.)
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+// =======================================================
 
 //Connect to MongoDB
 await connectDB();

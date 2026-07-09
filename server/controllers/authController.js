@@ -70,6 +70,11 @@ export const loginUser = async (req, res) => {
             return res.status(401).json({ message: "Invalid login credentials"});
         }
 
+        if (!secretKey) {
+            console.error("JWT_SECRET is not defined in environment variables");
+            return res.status(500).json({ message: "Server configuration error" });
+        }
+
         // Create a JWT token for authenticated user
         const token = jwt.sign(
             {
@@ -78,7 +83,7 @@ export const loginUser = async (req, res) => {
                 role: user.role
             },
             secretKey,
-            {expiresIn: "10h"}
+            {expiresIn: "24h"}
         );
 
         // Send the token in the response
