@@ -13,10 +13,10 @@ export default function CartPage() {
       <div className="page cart-page cart-page--empty">
         <h1 className="page__title">Your cart is empty</h1>
         <p className="page__subtitle">
-          Browse our collections and add the ones you like.
+          Browse our wallpapers and add the ones you like.
         </p>
-        <Link to="/" className="btn btn--primary">
-          Browse collections
+        <Link to="/products" className="btn btn--primary">
+          Browse wallpapers
         </Link>
       </div>
     )
@@ -27,7 +27,7 @@ export default function CartPage() {
       <header className="page__header">
         <h1 className="page__title">Your cart</h1>
         <p className="page__subtitle">
-          {count} {count === 1 ? 'collection' : 'collections'} ready for checkout.
+          {count} {count === 1 ? 'wallpaper' : 'wallpapers'} ready for checkout.
         </p>
       </header>
 

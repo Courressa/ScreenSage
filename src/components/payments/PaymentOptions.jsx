@@ -11,7 +11,7 @@ export default function PaymentOptions({ items, total }) {
     <div className="payment-options">
       <h2 className="payment-options__title">Checkout</h2>
       <p className="payment-options__subtitle">
-        {count} {count === 1 ? 'collection' : 'collections'} — {formatPrice(total)}
+        {count} {count === 1 ? 'wallpaper' : 'wallpapers'} — {formatPrice(total)}
       </p>
       <ul className="payment-options__items">
         {items.map((item) => (
