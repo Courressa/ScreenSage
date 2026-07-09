@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { categories, moods } from "../../data/data";
 
 const mapOptions = (options) => {
