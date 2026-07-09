@@ -3,7 +3,6 @@
 import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import 'dotenv/config';
 
 const secretKey = process.env.JWT_SECRET;
 const SALT_ROUNDS = 10;

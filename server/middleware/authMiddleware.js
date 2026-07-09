@@ -1,8 +1,6 @@
 /* global process */ //This is for process.env to avoid red squiggly lines in VS Code and let it know this is a Node.js project
 
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-dotenv.config();
 
 const secretKey = process.env.JWT_SECRET;
 
@@ -33,6 +31,11 @@ export function authMiddleware(req, res, next) {
         next();
     } catch (error) {
         console.error("Authentication error: ", error.message);
+
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ message: "Token expired" });
+        }
+
         res.status(401).json({ message: "Unauthorized" });
     }
 }
