@@ -28,7 +28,7 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/products', productRoutes);
 
 //Catch-all route to serve index.html for React Router
-app.get('*', (req, res) => {
+app.get(/\/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
