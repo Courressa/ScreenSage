@@ -1,5 +1,5 @@
-import DisplayGrid from '../components/display/DisplayGrid'
-import { products } from '../data/data'
+import DisplayGrid from '../components/display/DisplayGrid.jsx'
+import { products } from '../data/data.js'
 import { Link } from 'react-router-dom'
 import '../styles/display.css'
 

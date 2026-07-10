@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import AddToCartButton from '../cart/AddToCartButton'
-import { formatCreator, formatPrice } from '../../data/data'
+import AddToCartButton from '../cart/AddToCartButton.jsx'
+import { formatCreator, formatPrice } from '../../data/data.js'
 import '../../styles/display.css'
 
 export default function DisplayCard({ product }) {

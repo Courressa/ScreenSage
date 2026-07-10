@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import { formatPrice } from '../../data/data'
-import { useCart } from '../../context/useCart'
+import { formatPrice } from '../../data/data.js'
+import { useCart } from '../../context/useCart.js'
 
 export default function CartItem({ item }) {
   const { removeFromCart } = useCart()

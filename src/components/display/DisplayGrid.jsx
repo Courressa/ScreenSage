@@ -1,4 +1,4 @@
-import DisplayCard from './DisplayCard'
+import DisplayCard from './DisplayCard.jsx'
 
 export default function DisplayGrid({products = []}) {
 

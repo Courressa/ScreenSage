@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { useCart } from '../../context/useCart'
+import { useCart } from '../../context/useCart.js'
 import '../../styles/layout.css'
 import '../../styles/cart.css'
 

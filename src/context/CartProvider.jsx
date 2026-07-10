@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { getProductBySlug } from '../data/data'
-import { CartContext, CART_STORAGE_KEY } from './cartContext'
+import { getProductBySlug } from '../data/data.js'
+import { CartContext, CART_STORAGE_KEY } from './cartContext.js'
 
 function loadCart() {
   try {

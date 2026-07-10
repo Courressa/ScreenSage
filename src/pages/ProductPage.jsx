@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import AddToCartButton from '../components/cart/AddToCartButton'
-import DevicePreview from '../components/display/DevicePreview'
-import UniqueImageList from '../components/display/UniqueImageList'
-import { formatCreator, formatPrice, getProductBySlug } from '../data/data'
+import AddToCartButton from '../components/cart/AddToCartButton.jsx'
+import DevicePreview from '../components/display/DevicePreview.jsx'
+import UniqueImageList from '../components/display/UniqueImageList.jsx'
+import { formatCreator, formatPrice, getProductBySlug } from '../data/data.js'
 import '../styles/display.css'
 
 export default function ProductPage() {
