@@ -6,7 +6,7 @@ const mapOptions = (options) => {
     }) 
 }
 
-export default function Filter({
+export function Filter({
     type, setType,
     categorySelected, setCategorySelected,
     moodSelected, setMoodSelected,
