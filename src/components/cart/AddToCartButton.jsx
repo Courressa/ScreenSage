@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useCart } from '../../context/useCart'
+import { useCart } from '../../context/useCart.js'
 import '../../styles/cart.css'
 
 export default function AddToCartButton({ item, compact = false }) {

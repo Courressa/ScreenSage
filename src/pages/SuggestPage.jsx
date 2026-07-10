@@ -1,4 +1,4 @@
-import SuggestionForm from '../components/forms/SuggestionForm'
+import SuggestionForm from '../components/forms/SuggestionForm.jsx'
 
 export default function SuggestPage() {
   return (

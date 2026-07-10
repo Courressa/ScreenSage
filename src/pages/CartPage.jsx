@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom'
-import CartItem from '../components/cart/CartItem'
-import PaymentOptions from '../components/payments/PaymentOptions'
-import { useCart } from '../context/useCart'
-import { formatPrice } from '../data/data'
+import CartItem from '../components/cart/CartItem.jsx'
+import PaymentOptions from '../components/payments/PaymentOptions.jsx'
+import { useCart } from '../context/useCart.js'
+import { formatPrice } from '../data/data.js'
 import '../styles/cart.css'
 
 export default function CartPage() {
