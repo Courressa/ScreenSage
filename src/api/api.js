@@ -1,4 +1,4 @@
-const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
+const baseUrl = '/api/v1';
 
 export const loginUser = async (email, password) => {
     const urlToFetch = `${baseUrl}/auth/login`;
