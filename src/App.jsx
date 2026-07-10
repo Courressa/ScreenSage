@@ -1,10 +1,10 @@
 import { Routes, Route } from 'react-router-dom'
-import Layout from './components/layout/Layout'
-import HomePage from './pages/HomePage'
-import ProductPage from './pages/ProductPage'
-import SuggestPage from './pages/SuggestPage'
-import CartPage from './pages/CartPage'
-import BrowsePage from './pages/BrowsePage'
+import Layout from './components/layout/Layout.jsx'
+import HomePage from './pages/HomePage.jsx'
+import ProductPage from './pages/ProductPage.jsx'
+import SuggestPage from './pages/SuggestPage.jsx'
+import CartPage from './pages/CartPage.jsx'
+import BrowsePage from './pages/BrowsePage.jsx'
 
 export default function App() {
   return (

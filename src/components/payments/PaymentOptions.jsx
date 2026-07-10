@@ -1,4 +1,4 @@
-import { formatPrice } from '../../data/data'
+import { formatPrice } from '../../data/data.js'
 import '../../styles/payments.css'
 
 export default function PaymentOptions({ items, total }) {

@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Filter } from "../components/filter/Filter";
-import { products } from "../data/data";
-import DisplayGrid from "../components/display/DisplayGrid";
+import { Filter } from "../components/filter/Filter.jsx";
+import { products } from "../data/data.js";
+import DisplayGrid from "../components/display/DisplayGrid.jsx";
 
 export default function BrowsePage() {
   const [searchParams, setSearchParams] = useSearchParams();
