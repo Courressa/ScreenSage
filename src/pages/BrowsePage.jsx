@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import Filter from "../components/filter/Filter";
+import { Filter } from "../components/filter/Filter";
 import { products } from "../data/data";
 import DisplayGrid from "../components/display/DisplayGrid";
 
