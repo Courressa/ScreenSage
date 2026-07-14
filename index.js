@@ -41,6 +41,9 @@ await connectDB();
 //Middleware to parse JSON request bodies and URL-encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.get('/', (req, res) => {
+    res.send("Up and Running~")
+})
 
 app.use('/api/v1', healthRouter);
 app.use('/api/v1/auth', authRouter);
