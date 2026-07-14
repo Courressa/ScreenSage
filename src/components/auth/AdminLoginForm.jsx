@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../../api/api.js';
+import { loginAdmin } from '../../api/api.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 
 
@@ -19,20 +19,16 @@ export default function AdminLoginForm() {
     setLoading(true);
     
     try {
-      const response = await loginUser(email, password);
-
-      if (response.user?.role === 'admin') {
-        login(response.user, response.token);
-        navigate('/admin/dashboard');
-      } else {
-        setError("This account does not have admin access.");
-      }
+      const response = await loginAdmin(email, password);
+      login(response.user, response.token);
+      navigate('/admin/dashboard');
     } catch (error) {
       setError(error.message || "Invalid email or password");
     } finally {
       setLoading(false);
     }
   }
+
   return (
     <form onSubmit={handleSubmit}>
       <label htmlFor='email'>Email</label>
