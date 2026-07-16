@@ -7,6 +7,8 @@ import cors from 'cors';
 import healthRouter from './server/routes/healthRoutes.js';
 import authRouter from './server/routes/authRoutes.js';
 import productRoutes from './server/routes/productRoutes.js';
+import userRoutes from './server/routes/userRoutes.js';
+import orderRoutes from './server/routes/orderRoutes.js';
 import connectDB from './server/data/database.js';
 
 
@@ -48,6 +50,8 @@ app.get('/', (req, res) => {
 app.use('/api/v1', healthRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/products', productRoutes);
+app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/orders', orderRoutes);
 
 
 app.listen(PORT, () => {

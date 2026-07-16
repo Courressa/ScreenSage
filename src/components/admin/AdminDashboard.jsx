@@ -1,7 +1,2 @@
-import React from 'react'
-
-export default function AdminDashboard() {
-  return (
-    <div>AdminDashboard</div>
-  )
-}
+// Kept for compatibility — real dashboard lives in pages/admin/AdminDashboardPage.jsx
+export { default } from '../../pages/admin/AdminDashboardPage';

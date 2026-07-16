@@ -1,11 +1,46 @@
+import { useState } from 'react'
+import { createOrder } from '../../api/api'
+import { useCart } from '../../context/useCart'
 import { formatPrice } from '../../data/data'
 import '../../styles/payments.css'
+import '../../styles/forms.css'
 
 export default function PaymentOptions({ items, total }) {
+  const { clearCart } = useCart()
   const stripeKey = import.meta.env.VITE_STRIPE_KEY
   const paypalClientId = import.meta.env.VITE_PAYPAL_CLIENT_ID
   const keysConfigured = stripeKey && paypalClientId
   const count = items.length
+
+  const [submitting, setSubmitting] = useState(false)
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
+
+  const handleDemoCheckout = async () => {
+    setSubmitting(true)
+    setError('')
+    setMessage('')
+
+    try {
+      await createOrder({
+        items: items.map((item) => ({
+          productId: item.id,
+          slug: item.slug,
+          title: item.title,
+          price: item.price,
+          quantity: 1,
+        })),
+        paymentMethod: 'demo',
+        status: 'completed',
+      })
+      clearCart()
+      setMessage('Test order completed! Check Admin → Sales / Dashboard for totals.')
+    } catch (err) {
+      setError(err.message || 'Failed to complete test order')
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
     <div className="payment-options">
@@ -36,12 +71,30 @@ export default function PaymentOptions({ items, total }) {
         >
           Pay with PayPal
         </button>
+        <button
+          type="button"
+          className="btn btn--primary payment-options__btn"
+          onClick={handleDemoCheckout}
+          disabled={submitting || count === 0}
+        >
+          {submitting ? 'Placing order…' : 'Complete order (test)'}
+        </button>
       </div>
+      {message && (
+        <p className="payment-options__note" style={{ color: '#4ade80' }}>
+          {message}
+        </p>
+      )}
+      {error && (
+        <p className="payment-options__note" style={{ color: '#f87171' }}>
+          {error}
+        </p>
+      )}
       {!keysConfigured && (
         <p className="payment-options__note">
-          Payment integration coming soon. Set{' '}
-          <code>VITE_STRIPE_KEY</code> and <code>VITE_PAYPAL_CLIENT_ID</code> in
-          your <code>.env</code> file when ready.
+          Real Stripe/PayPal coming later. Use{' '}
+          <strong>Complete order (test)</strong> to record a demo sale for the
+          admin dashboard.
         </p>
       )}
     </div>

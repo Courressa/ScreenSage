@@ -9,7 +9,7 @@ export default function AdminProtectedRoute() {
     }
 
     if (!user || !isAdmin) {
-        return <Navigate to="admin/login" replace />;
+        return <Navigate to="/admin/login" replace />;
     }
 
     return <Outlet />;

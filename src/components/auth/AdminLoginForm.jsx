@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginAdmin } from '../../api/api.js';
 import { useAuth } from '../../context/AuthContext.jsx';
-
+import '../../styles/forms.css';
 
 export default function AdminLoginForm() {
   const [email, setEmail] = useState("");
@@ -17,13 +17,13 @@ export default function AdminLoginForm() {
     event.preventDefault();
     setError('');
     setLoading(true);
-    
+
     try {
       const response = await loginAdmin(email, password);
       login(response.user, response.token);
-      navigate('/admin/dashboard');
-    } catch (error) {
-      setError(error.message || "Invalid email or password");
+      navigate('/admin');
+    } catch (err) {
+      setError(err.message || "Invalid email or password");
     } finally {
       setLoading(false);
     }
@@ -35,21 +35,29 @@ export default function AdminLoginForm() {
       <input
         type='email'
         id='email'
+        value={email}
         placeholder='email@example.com'
         autoComplete='email'
-        onChange={(event) => {setEmail(event.target.value)}}
+        required
+        onChange={(event) => { setEmail(event.target.value) }}
       />
 
       <label htmlFor='password'>Password</label>
       <input
         type='password'
         id='password'
+        value={password}
         placeholder='Enter password'
         autoComplete='current-password'
-        onChange={(event) => {setPassword(event.target.value)}}
+        required
+        onChange={(event) => { setPassword(event.target.value) }}
       />
 
-      <button type='submit'>Login</button>
+      {error && <div className="admin-alert admin-alert--error">{error}</div>}
+
+      <button type='submit' className="btn btn--primary" disabled={loading}>
+        {loading ? 'Signing in…' : 'Login'}
+      </button>
     </form>
   )
 }
