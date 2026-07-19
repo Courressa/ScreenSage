@@ -1,4 +1,4 @@
-const baseUrl = '/api/v1';
+const baseUrl = 'http://localhost:3000/api/v1';
 
 export const loginUser = async (email, password) => {
     const urlToFetch = `${baseUrl}/auth/login`;
@@ -14,7 +14,7 @@ export const loginUser = async (email, password) => {
 
         if (response.ok) {
             const jsonResponse = await response.json();
-            console.log("Login Response: ", jsonResponse)
+            console.log("Login Jsonesponse: ", jsonResponse);
         } else {
             const errorData = await response.json();
             throw new Error(errorData.message || "Login failed");
