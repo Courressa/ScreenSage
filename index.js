@@ -3,6 +3,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import fileUpload from 'express-fileupload';
 
 import healthRouter from './server/routes/healthRoutes.js';
 import authRouter from './server/routes/authRoutes.js';
@@ -42,6 +43,15 @@ await connectDB();
 //Middleware to parse JSON request bodies and URL-encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(fileUpload({
+    useTempFiles: true,
+    tempFileDir: '/tmp/',
+    createParentPath: true,
+    limits: { fileSize: 100 * 1024 * 1024 }, // 100MB max
+    abortOnLimit: true
+}));
+
+
 app.get('/', (req, res) => {
     res.send("Up and Running~")
 })

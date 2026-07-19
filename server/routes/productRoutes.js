@@ -1,9 +1,12 @@
 import express from "express";
-import { getAllProducts, getProductBySlug, createProduct, updateProduct, deleteProduct } from "../controllers/productController.js";
+import { uploadMedia, getAllProducts, getProductBySlug, createProduct, updateProduct, deleteProduct } from "../controllers/productController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import { adminMiddleware } from "../middleware/adminMiddleware.js";
 
 const router = express.Router();
+
+// POST - /api/v1/products/upload - Upload media (images/videos) - returns URLs - PRIVATE
+router.post("/upload", uploadMedia);
 
 //POST - /api/v1/products - create product - PRIVATE
 router.post("/", authMiddleware, adminMiddleware, createProduct);

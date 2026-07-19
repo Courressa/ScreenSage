@@ -1,14 +1,56 @@
 import Product from "../models/Product.js";
+import cloudinary from '../data/cloudinary.js';
 
 const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const isMissingValue = (value) => value === undefined || value === null || value === "";
+
+export const uploadMedia = async (req, res) => {
+    try {
+        if (!req.files || Object.keys(req.files).length === 0) {
+            return res.status(400).json({ message: "No files uploaded" });
+        }
+
+        const uploadedFiles = {};
+
+        // Handle multiple file fields
+        for (let key in req.files) {
+            const files = Array.isArray(req.files[key]) ? req.files[key] : [req.files[key]];
+            uploadedFiles[key] = [];
+
+            for (let file of files) {
+                const result = await cloudinary.uploader.upload(file.tempFilePath, {
+                    folder: `screensage/${key}`,
+                    resource_type: "auto"   // handles images and videos
+                });
+
+                uploadedFiles[key].push({
+                    url: result.secure_url,
+                    public_id: result.public_id,
+                    resource_type: result.resource_type
+                });
+            }
+        }
+
+        res.status(200).json({
+            message: "Files uploaded successfully",
+            files: uploadedFiles
+        });
+    } catch (error) {
+        console.error("Upload error:", error);
+        res.status(500).json({ message: "Failed to upload files" });
+    }
+}
 
 export const createProduct = async (req, res) => {
     try {
         const newProduct = new Product(req.body);
 
         // Check if there is conent in the required fields
-        if (isMissingValue(newProduct.id) || isMissingValue(newProduct.slug) || isMissingValue(newProduct.title) || isMissingValue(newProduct.category) || isMissingValue(newProduct.description) || isMissingValue(newProduct.price) || isMissingValue(newProduct.imageCount) || newProduct.hasVideo === undefined || isMissingValue(newProduct.coverImage)) {
+        if (isMissingValue(newProduct.id) || isMissingValue(newProduct.slug) ||
+            isMissingValue(newProduct.title) || isMissingValue(newProduct.category) ||
+            isMissingValue(newProduct.description) || isMissingValue(newProduct.price) ||
+            isMissingValue(newProduct.imageCount) || newProduct.hasVideo === undefined ||
+            isMissingValue(newProduct.coverImage)) {
             return res.status(400).json({ message: "Please fill in all required fields" });
         }
 

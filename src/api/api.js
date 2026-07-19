@@ -1,4 +1,4 @@
-const baseUrl = 'http://localhost:3000/api/v1';
+const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
 
 const getToken = () => localStorage.getItem('token');
 
@@ -45,6 +45,15 @@ export const loginAdmin = async (email, password) => {
 };
 
 // ====================== Products ======================
+export const uploadMedia = async (formData) => {
+    const response = await fetch(`${baseUrl}/products/upload`, {
+        method: 'POST',
+        body: formData,
+        // Do NOT set Content-Type header for FormData (browser sets it automatically with boundary)
+    });
+
+    return parseResponse(response);
+}
 
 export const getProducts = async () => {
     const response = await fetch(`${baseUrl}/products`);
