@@ -1,4 +1,8 @@
-const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
+// Local: hit Express on :3000. Production (same Render host): relative /api/v1.
+// Override anytime with VITE_API_URL (must include /api/v1).
+const baseUrl =
+    import.meta.env.VITE_API_URL ||
+    (import.meta.env.PROD ? '/api/v1' : 'http://localhost:3000/api/v1');
 
 const getToken = () => localStorage.getItem('token');
 
