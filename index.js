@@ -51,11 +51,6 @@ app.use(fileUpload({
     abortOnLimit: true
 }));
 
-
-app.get('/', (req, res) => {
-    res.send("Up and Running~")
-})
-
 app.use('/api/v1', healthRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/products', productRoutes);
