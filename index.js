@@ -13,6 +13,7 @@ import authRouter from './server/routes/authRoutes.js';
 import productRoutes from './server/routes/productRoutes.js';
 import userRoutes from './server/routes/userRoutes.js';
 import orderRoutes from './server/routes/orderRoutes.js';
+import paymentRoutes from './server/routes/paymentRoutes.js';
 import connectDB from './server/data/database.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -67,6 +68,7 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/orders', orderRoutes);
+app.use('/api/v1/payments', paymentRoutes);
 
 // ====================== Frontend (Vite build) ======================
 // Production: serve React from /dist after `npm run build` on Render.

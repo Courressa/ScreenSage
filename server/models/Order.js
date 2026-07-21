@@ -35,6 +35,8 @@ const orderSchema = new mongoose.Schema(
             enum: ["demo", "stripe", "paypal"],
             default: "demo",
         },
+        /** PayPal Checkout order id (for capture + idempotency) */
+        paypalOrderId: { type: String, default: null, index: true, sparse: true },
         customerEmail: { type: String, required: true, trim: true, lowercase: true },
         // Optional link for signed-in users / future “My library”
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
