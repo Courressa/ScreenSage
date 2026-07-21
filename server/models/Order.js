@@ -7,6 +7,9 @@ const orderItemSchema = new mongoose.Schema(
         title: { type: String, required: true },
         price: { type: Number, required: true },
         quantity: { type: Number, required: true, default: 1, min: 1 },
+        // Snapshot of downloadable assets at purchase time (for email + re-download)
+        fullGallery: [{ type: String }],
+        coverImage: { type: String },
     },
     { _id: false }
 );
@@ -32,7 +35,11 @@ const orderSchema = new mongoose.Schema(
             enum: ["demo", "stripe", "paypal"],
             default: "demo",
         },
-        customerEmail: { type: String },
+        customerEmail: { type: String, required: true, trim: true, lowercase: true },
+        // Optional link for signed-in users / future “My library”
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+        emailSent: { type: Boolean, default: false },
+        emailMessage: { type: String },
     },
     {
         timestamps: true,

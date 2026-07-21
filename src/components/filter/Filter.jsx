@@ -1,63 +1,121 @@
-import { categories, moods } from "../../data/data";
+import "../../styles/filter.css";
 
 const mapOptions = (options) => {
-    return options.map(option => {
-        return <option key={option} value={option}>{option.charAt(0).toUpperCase() + option.slice(1)}</option>;
-    }) 
-}
+  return options.map((option) => (
+    <option key={option.toLowerCase()} value={option}>
+      {option.charAt(0).toUpperCase() + option.slice(1)}
+    </option>
+  ));
+};
 
 export function Filter({
-    type, setType,
-    categorySelected, setCategorySelected,
-    moodSelected, setMoodSelected,
-    hasVideo, setHasVideo
+  type,
+  setType,
+  categorySelected,
+  setCategorySelected,
+  moodSelected,
+  setMoodSelected,
+  tagSelected,
+  setTagSelected,
+  hasVideo,
+  setHasVideo,
+  categories = [],
+  moods = [],
+  tags = [],
 }) {
+  const hasActiveFilters =
+    type !== "all" ||
+    Boolean(categorySelected) ||
+    Boolean(moodSelected) ||
+    Boolean(tagSelected) ||
+    hasVideo;
+
+  const handleClear = () => {
+    setType("all");
+    setCategorySelected("");
+    setMoodSelected("");
+    setTagSelected("");
+    setHasVideo(false);
+  };
+
   return (
     <div className="filter">
-        <form>
-            <label>Type </label>
-            <select
-                name="type"
-                id="type" 
-                value={type}
-                onChange={(e) => setType(e.target.value)}
-            >
-                <option value="all">All</option>
-                <option value="individual">Individual</option>
-                <option value="collection">Collection</option>
-            </select>
+      <div className="filter__header">
+        <h2 className="filter__title">Filters</h2>
+        {hasActiveFilters && (
+          <button type="button" className="filter__clear" onClick={handleClear}>
+            Clear all
+          </button>
+        )}
+      </div>
 
-            <label>Categories </label>
-            <select
-                name="categories"
-                id="categories"
-                value={categorySelected}
-                onChange={(e) => setCategorySelected(e.target.value)}
-            >
-                <option value=""></option>
-                {mapOptions(categories)}
-            </select>
+      <form className="filter__form" onSubmit={(e) => e.preventDefault()}>
+        <div className="filter__group">
+          <label htmlFor="filter-type">Type</label>
+          <select
+            name="type"
+            id="filter-type"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+          >
+            <option value="all">All</option>
+            <option value="individual">Individual</option>
+            <option value="collection">Collection</option>
+          </select>
+        </div>
 
-            <label>Moods </label>
-            <select
-                name="moods"
-                id="moods"
-                value={moodSelected}
-                onChange={(e) => setMoodSelected(e.target.value)}
-            >
-                <option value=""></option>
-                {mapOptions(moods)}
-            </select>
+        <div className="filter__group">
+          <label htmlFor="filter-categories">Category</label>
+          <select
+            name="categories"
+            id="filter-categories"
+            value={categorySelected}
+            onChange={(e) => setCategorySelected(e.target.value)}
+          >
+            <option value="">All categories</option>
+            {mapOptions(categories)}
+          </select>
+        </div>
 
-            <label>Has Video</label>
+        <div className="filter__group">
+          <label htmlFor="filter-moods">Mood</label>
+          <select
+            name="moods"
+            id="filter-moods"
+            value={moodSelected}
+            onChange={(e) => setMoodSelected(e.target.value)}
+          >
+            <option value="">All moods</option>
+            {mapOptions(moods)}
+          </select>
+        </div>
+
+        <div className="filter__group">
+          <label htmlFor="filter-tags">Tag</label>
+          <select
+            name="tags"
+            id="filter-tags"
+            value={tagSelected}
+            onChange={(e) => setTagSelected(e.target.value)}
+          >
+            <option value="">All tags</option>
+            {mapOptions(tags)}
+          </select>
+        </div>
+
+        <div className="filter__group filter__group--checkbox">
+          <label className="filter__checkbox" htmlFor="filter-hasVideo">
             <input
-            type="checkbox"
-            id="hasVideo"
-            name="hasVideo"
-            checked={hasVideo}
-            onChange={(e) => setHasVideo(e.target.checked)}
+              type="checkbox"
+              id="filter-hasVideo"
+              name="hasVideo"
+              checked={hasVideo}
+              onChange={(e) => setHasVideo(e.target.checked)}
             />
-        </form>
+            <span className="filter__checkbox-text">Has video</span>
+          </label>
+        </div>
+      </form>
     </div>
-  )
+  );
 }

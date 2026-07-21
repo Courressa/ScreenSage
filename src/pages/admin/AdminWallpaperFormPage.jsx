@@ -3,8 +3,10 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   createProduct,
   getProductBySlug,
+  getProducts,
   updateProduct,
 } from '../../api/api';
+import { AdminMediaUploader } from '../../components/admin/AdminMediaUploader';
 import '../../styles/admin.css';
 import '../../styles/forms.css';
 
@@ -23,7 +25,6 @@ const emptyForm = {
   hasVideo: false,
   coverImage: '',
   devices: 'phone, tablet, desktop',
-  resolutions: '4K',
   fullGallery: '',
   devicePreviewsPhone: '',
   devicePreviewsTablet: '',
@@ -50,44 +51,141 @@ export default function AdminWallpaperFormPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (!isEdit) return;
+  const UPLOADER_TO_FORM_FIELD = {
+    coverImage: 'coverImage',
+    phonePreviews: 'devicePreviewsPhone',
+    tabletPreviews: 'devicePreviewsTablet',
+    desktopPreviews: 'devicePreviewsDesktop',
+    fullGallery: 'fullGallery',
+  };
 
+  const appendUrls = (current, newUrls) => {
+    const existing = splitList(current);
+    const merged = [...existing];
+    for (const url of newUrls) {
+      if (url && !merged.includes(url)) {
+        merged.push(url);
+      }
+    }
+    return joinList(merged);
+  };
+
+  // Handle media upload success — only update fields present in the response
+  const handleMediaUpload = (mediaFiles) => {
+    setForm((prev) => {
+      const next = { ...prev };
+
+      if (mediaFiles.coverImage?.length) {
+        next.coverImage = mediaFiles.coverImage[0].url || prev.coverImage;
+      }
+      if (mediaFiles.phonePreviews?.length) {
+        next.devicePreviewsPhone = appendUrls(
+          prev.devicePreviewsPhone,
+          mediaFiles.phonePreviews.map((f) => f.url)
+        );
+      }
+      if (mediaFiles.tabletPreviews?.length) {
+        next.devicePreviewsTablet = appendUrls(
+          prev.devicePreviewsTablet,
+          mediaFiles.tabletPreviews.map((f) => f.url)
+        );
+      }
+      if (mediaFiles.desktopPreviews?.length) {
+        next.devicePreviewsDesktop = appendUrls(
+          prev.devicePreviewsDesktop,
+          mediaFiles.desktopPreviews.map((f) => f.url)
+        );
+      }
+      if (mediaFiles.fullGallery?.length) {
+        next.fullGallery = appendUrls(
+          prev.fullGallery,
+          mediaFiles.fullGallery.map((f) => f.url)
+        );
+      }
+
+      return next;
+    });
+  };
+
+  // Remove a URL from the matching form field when user removes a preview
+  const handleMediaRemove = ({ field, url }) => {
+    const formField = UPLOADER_TO_FORM_FIELD[field];
+    if (!formField || !url) return;
+
+    setForm((prev) => {
+      if (formField === 'coverImage') {
+        return {
+          ...prev,
+          coverImage: prev.coverImage === url ? '' : prev.coverImage,
+        };
+      }
+
+      return {
+        ...prev,
+        [formField]: joinList(splitList(prev[formField]).filter((item) => item !== url)),
+      };
+    });
+  };
+
+  useEffect(() => {
     let cancelled = false;
 
     const load = async () => {
       setLoading(true);
       setError('');
       try {
-        const product = await getProductBySlug(editSlug);
-        if (cancelled) return;
+        if (isEdit) {
+          const product = await getProductBySlug(editSlug);
+          if (cancelled) return;
 
-        setForm({
-          id: product.id ?? '',
-          type: product.type || 'individual',
-          slug: product.slug || '',
-          title: product.title || '',
-          contributor: product.contributor || '',
-          category: product.category || '',
-          mood: joinList(product.mood),
-          tags: joinList(product.tags),
-          description: product.description || '',
-          price: product.price ?? '',
-          imageCount: product.imageCount ?? '',
-          hasVideo: Boolean(product.hasVideo),
-          coverImage: product.coverImage || '',
-          devices: joinList(product.devices),
-          resolutions: joinList(product.resolutions),
-          fullGallery: joinList(product.fullGallery),
-          devicePreviewsPhone: joinList(product.devicePreviews?.phone),
-          devicePreviewsTablet: joinList(product.devicePreviews?.tablet),
-          devicePreviewsDesktop: joinList(product.devicePreviews?.desktop),
-          stripePriceId: product.stripePriceId || '',
-          paypalProductId: product.paypalProductId || '',
-        });
+          setForm({
+            id: product.id ?? '',
+            type: product.type || 'individual',
+            slug: product.slug || '',
+            title: product.title || '',
+            contributor: product.contributor || '',
+            category: product.category || '',
+            mood: joinList(product.mood),
+            tags: joinList(product.tags),
+            description: product.description || '',
+            price: product.price ?? '',
+            imageCount: product.imageCount ?? '',
+            hasVideo: Boolean(product.hasVideo),
+            coverImage: product.coverImage || '',
+            devices: joinList(product.devices),
+            fullGallery: joinList(product.fullGallery),
+            devicePreviewsPhone: joinList(product.devicePreviews?.phone),
+            devicePreviewsTablet: joinList(product.devicePreviews?.tablet),
+            devicePreviewsDesktop: joinList(product.devicePreviews?.desktop),
+            stripePriceId: product.stripePriceId || '',
+            paypalProductId: product.paypalProductId || '',
+          });
+        } else {
+          // Prefill next numeric id so admins don't track it by hand
+          const products = await getProducts();
+          if (cancelled) return;
+
+          const maxId = (Array.isArray(products) ? products : []).reduce(
+            (max, product) => {
+              const n = Number(product?.id);
+              return Number.isFinite(n) && n > max ? n : max;
+            },
+            0
+          );
+
+          setForm((prev) => ({
+            ...prev,
+            id: maxId + 1,
+          }));
+        }
       } catch (err) {
         if (!cancelled) {
-          setError(err.message || 'Failed to load wallpaper');
+          setError(
+            err.message ||
+              (isEdit
+                ? 'Failed to load wallpaper'
+                : 'Failed to load next product ID')
+          );
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -124,7 +222,6 @@ export default function AdminWallpaperFormPage() {
       hasVideo: Boolean(form.hasVideo),
       coverImage: form.coverImage.trim(),
       devices: splitList(form.devices),
-      resolutions: splitList(form.resolutions),
       fullGallery: splitList(form.fullGallery),
       devicePreviews: {
         phone: splitList(form.devicePreviewsPhone),
@@ -164,7 +261,11 @@ export default function AdminWallpaperFormPage() {
   };
 
   if (loading) {
-    return <p className="admin-loading">Loading wallpaper…</p>;
+    return (
+      <p className="admin-loading">
+        {isEdit ? 'Loading wallpaper…' : 'Preparing form…'}
+      </p>
+    );
   }
 
   return (
@@ -188,6 +289,12 @@ export default function AdminWallpaperFormPage() {
       {error && <div className="admin-alert admin-alert--error">{error}</div>}
 
       <div className="admin-panel">
+        {/* Media Upload Section */}
+        <AdminMediaUploader
+          onUploadSuccess={handleMediaUpload}
+          onRemoveMedia={handleMediaRemove}
+        />
+        
         <form className="admin-form" onSubmit={handleSubmit}>
           <div className="admin-form__grid">
             <div className="form-group">
@@ -196,11 +303,19 @@ export default function AdminWallpaperFormPage() {
                 id="id"
                 name="id"
                 type="number"
+                min={1}
+                step={1}
                 value={form.id}
                 onChange={handleChange}
                 required
                 disabled={isEdit}
               />
+              {!isEdit && (
+                <small className="form-hint">
+                  Auto-filled with the next available ID (highest existing + 1).
+                  You can change it if needed.
+                </small>
+              )}
             </div>
 
             <div className="form-group">
@@ -361,18 +476,6 @@ export default function AdminWallpaperFormPage() {
                 value={form.devices}
                 onChange={handleChange}
                 placeholder="phone, tablet, desktop"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="resolutions">Resolutions (comma-separated)</label>
-              <input
-                id="resolutions"
-                name="resolutions"
-                type="text"
-                value={form.resolutions}
-                onChange={handleChange}
-                placeholder="4K, 8K"
               />
             </div>
 

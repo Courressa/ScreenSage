@@ -94,7 +94,6 @@ export default function ProductPage() {
   }
 
   const moods = item.mood || []
-  const resolutions = item.resolutions || []
   const devices = item.devices || []
   const tags = item.tags || []
 
@@ -129,9 +128,6 @@ export default function ProductPage() {
           </div>
           <div className="display-detail__tags">
             <span>{assetLabel}</span>
-            {resolutions.map((r) => (
-              <span key={r}>{r}</span>
-            ))}
             {devices.map((d) => (
               <span key={d}>{d}</span>
             ))}

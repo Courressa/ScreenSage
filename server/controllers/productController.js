@@ -43,10 +43,30 @@ export const uploadMedia = async (req, res) => {
 
 export const createProduct = async (req, res) => {
     try {
-        const newProduct = new Product(req.body);
+        const body = { ...req.body };
 
-        // Check if there is conent in the required fields
-        if (isMissingValue(newProduct.id) || isMissingValue(newProduct.slug) ||
+        // Auto-assign next numeric id when missing (highest existing + 1)
+        if (isMissingValue(body.id)) {
+            const highest = await Product.findOne().sort({ id: -1 }).select("id").lean();
+            body.id = (highest?.id ?? 0) + 1;
+        } else {
+            body.id = Number(body.id);
+            if (!Number.isFinite(body.id) || body.id < 1) {
+                return res.status(400).json({ message: "Numeric ID must be a positive number." });
+            }
+
+            const idTaken = await Product.findOne({ id: body.id }).select("_id").lean();
+            if (idTaken) {
+                return res.status(409).json({
+                    message: `Numeric ID ${body.id} is already in use. Use the next available ID.`,
+                });
+            }
+        }
+
+        const newProduct = new Product(body);
+
+        // Check if there is content in the required fields
+        if (isMissingValue(newProduct.slug) ||
             isMissingValue(newProduct.title) || isMissingValue(newProduct.category) ||
             isMissingValue(newProduct.description) || isMissingValue(newProduct.price) ||
             isMissingValue(newProduct.imageCount) || newProduct.hasVideo === undefined ||
@@ -70,6 +90,12 @@ export const createProduct = async (req, res) => {
         res.status(201).json({ message: "Product created successfully", product: newProduct });
     } catch (error) {
         console.error("Error creating product: ", error.message);
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyPattern || {})[0] || "field";
+            return res.status(409).json({
+                message: `That ${field} is already in use. Please choose a different value.`,
+            });
+        }
         res.status(500).json({ message: "Failed to create product. Internal server error." });
     }
 }

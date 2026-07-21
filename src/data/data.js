@@ -32,7 +32,6 @@ export const products = [
     ],
 
     devices: ['phone', 'tablet', 'desktop'],
-    resolutions: ['4K', '8K'],
     stripePriceId: null,
     paypalProductId: null,
   },
@@ -64,7 +63,6 @@ export const products = [
     ],
 
     devices: ['phone', 'tablet', 'desktop'],
-    resolutions: ['4K'],
     stripePriceId: null,
     paypalProductId: null,
   },
@@ -96,7 +94,6 @@ export const products = [
     ],
 
     devices: ['phone', 'tablet', 'desktop'],
-    resolutions: ['4K', '8K'],
     stripePriceId: null,
     paypalProductId: null,
   },
@@ -128,7 +125,6 @@ export const products = [
     fullGallery: [placeholderImage, placeholderImage, placeholderImage],
 
     devices: ['phone', 'tablet', 'desktop'],
-    resolutions: ['4K', '8K'],
     stripePriceId: null,
     paypalProductId: null,
   },
@@ -164,30 +160,9 @@ export const products = [
     ],
 
     devices: ['phone', 'tablet', 'desktop'],
-    resolutions: ['4K'],
     stripePriceId: null,
     paypalProductId: null,
   }
-]
-
-export const categories = [
-  'abstract',
-  'nature',
-  'cyberpunk',
-  'minimal',
-  'space',
-  'geometric'
-]
-
-export const moods = [
-  'calming',
-  'energetic',
-  'dreamy',
-  'futuristic',
-  'minimal',
-  'vibrant',
-  'dark',
-  'warm'
 ]
 
 export function getProductBySlug(slug) {
