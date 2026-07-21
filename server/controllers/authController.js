@@ -50,50 +50,85 @@ export const registerUser = async (req, res) => {
     }
 }
 
+const authenticateUser = async (email, password) => {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        const error = new Error("User not found");
+        error.statusCode = 401;
+        throw error;
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    if (!passwordMatch) {
+        const error = new Error("Invalid login credentials");
+        error.statusCode = 401;
+        throw error;
+    }
+
+    if (!secretKey) {
+        console.error("JWT_SECRET is not defined in environment variables");
+        const error = new Error("Server configuration error");
+        error.statusCode = 500;
+        throw error;
+    }
+
+    const token = jwt.sign(
+        {
+            userId: user._id,
+            email: user.email,
+            role: user.role
+        },
+        secretKey,
+        { expiresIn: "24h" }
+    );
+
+    return {
+        message: "Login successful",
+        token,
+        user: {
+            id: user._id,
+            username: user.username,
+            email: user.email,
+            role: user.role
+        }
+    };
+};
+
 export const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
-
-        // Find user by email
-        const user = await User.findOne({ email });
-
-        //Check if the user exists
-        if (!user) {
-            return res.status(401).json({ message: "User not found" });
-        }
-
-        // Compare the provided password with the hashed password in the database
-        const passwordMatch = await bcrypt.compare(password, user.password);
-
-        //Check if the password matches
-        if (!passwordMatch) {
-            return res.status(401).json({ message: "Invalid login credentials"});
-        }
-
-        // Create a JWT token for authenticated user
-        const token = jwt.sign(
-            {
-                userId: user._id,
-                email: user.email,
-                role: user.role
-            },
-            secretKey,
-            {expiresIn: "10h"}
-        );
-
-        // Send the token in the response
-        res.status(200).json({
-            message: "Login successful", 
-            token,
-            user: {
-                id: user._id,
-                username: user.username,
-                email: user.email,
-                role: user.role
-            }
-        });
+        const payload = await authenticateUser(email, password);
+        res.status(200).json(payload);
     } catch (error) {
         console.error("Error logging in user: ", error.message);
-        res.status(500).json({ message: "Login failed. Internal server error." });
+        res.status(error.statusCode || 500).json({
+            message: error.statusCode ? error.message : "Login failed. Internal server error."
+        });
     }
-}
+};
+
+// Admin-only login — rejects non-admin accounts even with valid credentials
+export const loginAdminUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const payload = await authenticateUser(email, password);
+
+        if (payload.user.role !== "admin") {
+            return res.status(403).json({
+                message: "This account does not have admin access."
+            });
+        }
+
+        res.status(200).json({
+            ...payload,
+            message: "Admin login successful"
+        });
+    } catch (error) {
+        console.error("Error logging in admin: ", error.message);
+        res.status(error.statusCode || 500).json({
+            message: error.statusCode ? error.message : "Login failed. Internal server error."
+        });
+    }
+};

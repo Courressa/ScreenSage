@@ -1,11 +1,45 @@
-import DisplayGrid from '../components/display/DisplayGrid.jsx'
-import { products } from '../data/data.js'
-import { Link } from 'react-router-dom'
-import '../styles/display.css'
+import { useEffect, useState } from 'react';
+import DisplayGrid from '../components/display/DisplayGrid';
+import { getProducts } from '../api/api';
+import { Link } from 'react-router-dom';
+import '../styles/display.css';
+import '../styles/forms.css';
 
 export default function HomePage() {
-  const firstFewCollections = products.filter(product => product.type === 'collection').slice(0, 6);
-  const firstFewIndividuals = products.filter(product => product.type === 'individual').slice(0, 6);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const data = await getProducts();
+        if (!cancelled) setProducts(data);
+      } catch (err) {
+        if (!cancelled) {
+          setError(err.message || 'Failed to load products');
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const firstFewCollections = products
+    .filter((product) => product.type === 'collection')
+    .slice(0, 6);
+  const firstFewIndividuals = products
+    .filter((product) => product.type === 'individual')
+    .slice(0, 6);
 
   return (
     <div className="page">
@@ -38,28 +72,46 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section aria-label="Collections" className="product-showcase">
-        <h2>Collections</h2>
-        <div className="product-showcase__home">
-          <DisplayGrid products={firstFewCollections} />
-        </div>
-        <Link
-          to="/products?type=collection"
-          className="btn btn--primary"
-          onClick={() => { window.scrollTo(0, 0); }}
-        >View All Collections</Link>
-      </section>
-      <section aria-label="Individual" className="product-showcase">
-        <h2>Individual</h2>
-        <div className="product-showcase__home">
-          <DisplayGrid products={firstFewIndividuals} />
-        </div>
-        <Link
-          to="/products?type=individual"
-          className="btn btn--primary"
-          onClick={() => { window.scrollTo(0, 0); }}
-        >View All Individuals</Link>
-      </section>
+      {error && (
+        <p style={{ color: '#f87171' }}>{error}</p>
+      )}
+
+      {loading ? (
+        <p>Loading wallpapers…</p>
+      ) : (
+        <>
+          <section aria-label="Collections" className="product-showcase">
+            <h2>Collections</h2>
+            <div className="product-showcase__home">
+              <DisplayGrid products={firstFewCollections} />
+            </div>
+            <Link
+              to="/products?type=collection"
+              className="btn btn--primary"
+              onClick={() => {
+                window.scrollTo(0, 0);
+              }}
+            >
+              View All Collections
+            </Link>
+          </section>
+          <section aria-label="Individual" className="product-showcase">
+            <h2>Individual</h2>
+            <div className="product-showcase__home">
+              <DisplayGrid products={firstFewIndividuals} />
+            </div>
+            <Link
+              to="/products?type=individual"
+              className="btn btn--primary"
+              onClick={() => {
+                window.scrollTo(0, 0);
+              }}
+            >
+              View All Individuals
+            </Link>
+          </section>
+        </>
+      )}
     </div>
-  )
+  );
 }

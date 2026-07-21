@@ -25,7 +25,6 @@ const productSchema = new mongoose.Schema(
         fullGallery: [{ type: String }],
     
         devices: [{ type: String, enum:['phone', 'tablet', 'desktop'] }],
-        resolutions: [{ type: String }],
         stripePriceId: { type: String },
         paypalProductId: { type: String }
     }, {

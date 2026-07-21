@@ -1,12 +1,28 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import CartItem from '../components/cart/CartItem.jsx'
+import OrderSuccess from '../components/payments/OrderSuccess.jsx'
 import PaymentOptions from '../components/payments/PaymentOptions.jsx'
 import { useCart } from '../context/useCart.js'
 import { formatPrice } from '../data/data.js'
 import '../styles/cart.css'
+import '../styles/payments.css'
 
 export default function CartPage() {
   const { items, total, count } = useCart()
+  const [orderResult, setOrderResult] = useState(null)
+
+  // Keep success visible after cart is cleared (was hiding the old toast)
+  if (orderResult) {
+    return (
+      <div className="page cart-page">
+        <OrderSuccess
+          result={orderResult}
+          onDismiss={() => setOrderResult(null)}
+        />
+      </div>
+    )
+  }
 
   if (count === 0) {
     return (
@@ -51,7 +67,11 @@ export default function CartPage() {
               <span>{formatPrice(total)}</span>
             </div>
           </div>
-          <PaymentOptions items={items} total={total} />
+          <PaymentOptions
+            items={items}
+            total={total}
+            onOrderComplete={setOrderResult}
+          />
         </aside>
       </div>
     </div>

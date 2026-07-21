@@ -1,14 +1,76 @@
 import Product from "../models/Product.js";
+import cloudinary from '../data/cloudinary.js';
 
 const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const isMissingValue = (value) => value === undefined || value === null || value === "";
 
+export const uploadMedia = async (req, res) => {
+    try {
+        if (!req.files || Object.keys(req.files).length === 0) {
+            return res.status(400).json({ message: "No files uploaded" });
+        }
+
+        const uploadedFiles = {};
+
+        // Handle multiple file fields
+        for (let key in req.files) {
+            const files = Array.isArray(req.files[key]) ? req.files[key] : [req.files[key]];
+            uploadedFiles[key] = [];
+
+            for (let file of files) {
+                const result = await cloudinary.uploader.upload(file.tempFilePath, {
+                    folder: `screensage/${key}`,
+                    resource_type: "auto"   // handles images and videos
+                });
+
+                uploadedFiles[key].push({
+                    url: result.secure_url,
+                    public_id: result.public_id,
+                    resource_type: result.resource_type
+                });
+            }
+        }
+
+        res.status(200).json({
+            message: "Files uploaded successfully",
+            files: uploadedFiles
+        });
+    } catch (error) {
+        console.error("Upload error:", error);
+        res.status(500).json({ message: "Failed to upload files" });
+    }
+}
+
 export const createProduct = async (req, res) => {
     try {
-        const newProduct = new Product(req.body);
+        const body = { ...req.body };
 
-        // Check if there is conent in the required fields
-        if (isMissingValue(newProduct.id) || isMissingValue(newProduct.slug) || isMissingValue(newProduct.title) || isMissingValue(newProduct.category) || isMissingValue(newProduct.description) || isMissingValue(newProduct.price) || isMissingValue(newProduct.imageCount) || newProduct.hasVideo === undefined || isMissingValue(newProduct.coverImage)) {
+        // Auto-assign next numeric id when missing (highest existing + 1)
+        if (isMissingValue(body.id)) {
+            const highest = await Product.findOne().sort({ id: -1 }).select("id").lean();
+            body.id = (highest?.id ?? 0) + 1;
+        } else {
+            body.id = Number(body.id);
+            if (!Number.isFinite(body.id) || body.id < 1) {
+                return res.status(400).json({ message: "Numeric ID must be a positive number." });
+            }
+
+            const idTaken = await Product.findOne({ id: body.id }).select("_id").lean();
+            if (idTaken) {
+                return res.status(409).json({
+                    message: `Numeric ID ${body.id} is already in use. Use the next available ID.`,
+                });
+            }
+        }
+
+        const newProduct = new Product(body);
+
+        // Check if there is content in the required fields
+        if (isMissingValue(newProduct.slug) ||
+            isMissingValue(newProduct.title) || isMissingValue(newProduct.category) ||
+            isMissingValue(newProduct.description) || isMissingValue(newProduct.price) ||
+            isMissingValue(newProduct.imageCount) || newProduct.hasVideo === undefined ||
+            isMissingValue(newProduct.coverImage)) {
             return res.status(400).json({ message: "Please fill in all required fields" });
         }
 
@@ -28,6 +90,12 @@ export const createProduct = async (req, res) => {
         res.status(201).json({ message: "Product created successfully", product: newProduct });
     } catch (error) {
         console.error("Error creating product: ", error.message);
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyPattern || {})[0] || "field";
+            return res.status(409).json({
+                message: `That ${field} is already in use. Please choose a different value.`,
+            });
+        }
         res.status(500).json({ message: "Failed to create product. Internal server error." });
     }
 }
