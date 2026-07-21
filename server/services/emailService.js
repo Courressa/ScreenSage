@@ -1,12 +1,76 @@
 /* global process */
 import nodemailer from 'nodemailer';
 
+/**
+ * Prefer Resend HTTPS API on cloud hosts (Render often times out on SMTP :587).
+ * Falls back to SMTP for local/dev when no Resend API key is available.
+ */
+function getResendApiKey() {
+    if (process.env.RESEND_API_KEY) {
+        return process.env.RESEND_API_KEY.trim();
+    }
+    // Common setup: SMTP_HOST=smtp.resend.com, SMTP_PASS=re_xxx
+    const host = (process.env.SMTP_HOST || '').toLowerCase();
+    const pass = (process.env.SMTP_PASS || '').trim();
+    if (host.includes('resend') && pass.startsWith('re_')) {
+        return pass;
+    }
+    return '';
+}
+
 export function isEmailConfigured() {
+    if (getResendApiKey()) return true;
     return Boolean(
         process.env.SMTP_HOST &&
         process.env.SMTP_USER &&
         process.env.SMTP_PASS
     );
+}
+
+async function sendViaResendApi({ from, to, subject, html, text }) {
+    const apiKey = getResendApiKey();
+    const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            from,
+            to: [to],
+            subject,
+            html,
+            text,
+        }),
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        const detail =
+            data?.message ||
+            data?.error?.message ||
+            (typeof data?.error === 'string' ? data.error : null) ||
+            `Resend API error (${response.status})`;
+        throw new Error(detail);
+    }
+    return data;
+}
+
+async function sendViaSmtp({ from, to, subject, html, text }) {
+    const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: Number(process.env.SMTP_PORT) || 587,
+        secure: process.env.SMTP_SECURE === 'true',
+        connectionTimeout: 15_000,
+        greetingTimeout: 15_000,
+        socketTimeout: 20_000,
+        auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+        },
+    });
+
+    await transporter.sendMail({ from, to, subject, text, html });
 }
 
 const isCloudinaryUrl = (url) => /res\.cloudinary\.com\//i.test(url);
@@ -221,28 +285,22 @@ export async function sendPurchaseEmail({ to, order, items }) {
         ];
     });
 
-    try {
-        const transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST,
-            port: Number(process.env.SMTP_PORT) || 587,
-            secure: process.env.SMTP_SECURE === 'true',
-            auth: {
-                user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASS,
-            },
-        });
+    const subject = 'Your ScreenSage wallpapers are ready';
+    const text = [
+        'Thanks for your purchase. Your wallpapers are ready to preview and download.',
+        '',
+        ...textLines,
+    ].join('\n');
 
-        await transporter.sendMail({
-            from,
-            to,
-            subject: 'Your ScreenSage wallpapers are ready',
-            text: [
-                'Thanks for your purchase. Your wallpapers are ready to preview and download.',
-                '',
-                ...textLines,
-            ].join('\n'),
-            html,
-        });
+    try {
+        // HTTPS API avoids SMTP connection timeouts on Render and similar hosts
+        if (getResendApiKey()) {
+            await sendViaResendApi({ from, to, subject, html, text });
+            console.log('Purchase email sent via Resend API to', to);
+        } else {
+            await sendViaSmtp({ from, to, subject, html, text });
+            console.log('Purchase email sent via SMTP to', to);
+        }
 
         return {
             sent: true,

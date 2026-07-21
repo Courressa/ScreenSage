@@ -117,6 +117,30 @@ export const createOrder = async (orderData) => {
     return parseResponse(response);
 };
 
+// ====================== PayPal ======================
+
+export const createPaypalOrder = async ({ items, customerEmail }) => {
+    const response = await fetch(`${baseUrl}/payments/paypal/create`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ items, customerEmail }),
+    });
+    return parseResponse(response);
+};
+
+export const capturePaypalOrder = async ({ paypalOrderId, items, customerEmail }) => {
+    const response = await fetch(`${baseUrl}/payments/paypal/capture`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ paypalOrderId, items, customerEmail }),
+    });
+    return parseResponse(response);
+};
+
 export const getOrders = async () => {
     const response = await fetch(`${baseUrl}/orders`, {
         headers: getAuthHeaders(false),

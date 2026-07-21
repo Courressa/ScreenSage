@@ -55,6 +55,40 @@
   width: 100%;
 }
 
+.payment-options__paypal {
+  width: 100%;
+}
+
+.payment-options__paypal-hint {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Frame the PayPal iframe so white SDK chrome matches our dark, rounded UI */
+.payment-options__paypal-buttons {
+  min-height: 45px;
+  padding: 0.65rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+  overflow: hidden;
+}
+
+.payment-options__paypal-buttons iframe {
+  border-radius: var(--radius-sm) !important;
+}
+
+.payment-options__paypal-buttons--disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.payment-options__paypal a {
+  color: var(--accent);
+}
+
 .payment-options__form {
   margin-bottom: 0.25rem;
 }
