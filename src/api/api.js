@@ -52,8 +52,9 @@ export const loginAdmin = async (email, password) => {
 export const uploadMedia = async (formData) => {
     const response = await fetch(`${baseUrl}/products/upload`, {
         method: 'POST',
+        // Auth only — do NOT set Content-Type for FormData (browser sets boundary)
+        headers: getAuthHeaders(false),
         body: formData,
-        // Do NOT set Content-Type header for FormData (browser sets it automatically with boundary)
     });
 
     return parseResponse(response);
@@ -66,6 +67,17 @@ export const getProducts = async () => {
 
 export const getProductBySlug = async (slug) => {
     const response = await fetch(`${baseUrl}/products/${encodeURIComponent(slug)}`);
+    return parseResponse(response);
+};
+
+/** Admin edit form — includes fullGallery (not on public product endpoints) */
+export const getAdminProductBySlug = async (slug) => {
+    const response = await fetch(
+        `${baseUrl}/products/admin/${encodeURIComponent(slug)}`,
+        {
+            headers: getAuthHeaders(false),
+        }
+    );
     return parseResponse(response);
 };
 
@@ -104,19 +116,6 @@ export const getUsers = async () => {
     return parseResponse(response);
 };
 
-// ====================== Orders ======================
-
-export const createOrder = async (orderData) => {
-    const response = await fetch(`${baseUrl}/orders`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData),
-    });
-    return parseResponse(response);
-};
-
 // ====================== PayPal ======================
 
 export const createPaypalOrder = async ({ items, customerEmail }) => {
@@ -137,6 +136,30 @@ export const capturePaypalOrder = async ({ paypalOrderId, items, customerEmail }
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ paypalOrderId, items, customerEmail }),
+    });
+    return parseResponse(response);
+};
+
+// ====================== Stripe ======================
+
+export const createStripeCheckout = async ({ items, customerEmail }) => {
+    const response = await fetch(`${baseUrl}/payments/stripe/create`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ items, customerEmail }),
+    });
+    return parseResponse(response);
+};
+
+export const confirmStripeCheckout = async ({ sessionId }) => {
+    const response = await fetch(`${baseUrl}/payments/stripe/confirm`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ sessionId }),
     });
     return parseResponse(response);
 };

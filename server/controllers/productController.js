@@ -100,9 +100,13 @@ export const createProduct = async (req, res) => {
     }
 }
 
+/**
+ * Public catalog — never expose paid fullGallery download URLs.
+ * Covers + device previews stay public for browsing.
+ */
 export const getAllProducts = async (req, res) => {
     try {
-        const products = await Product.find();
+        const products = await Product.find().select("-fullGallery");
         res.status(200).json(products);
     } catch (error) {
         console.error("Error fetching products: ", error.message);
@@ -113,7 +117,7 @@ export const getAllProducts = async (req, res) => {
 export const getProductBySlug = async (req, res) => {
     try {
         const {slug} = req.params;
-        const product = await Product.findOne({ slug: slug });
+        const product = await Product.findOne({ slug: slug }).select("-fullGallery");
 
         if (!product) {
             return res.status(404).json({ message: "Product not found." });
@@ -122,6 +126,23 @@ export const getProductBySlug = async (req, res) => {
         res.status(200).json(product);
     } catch (error) {
         console.error("Error fetching product by slug: ", error.message);
+        res.status(500).json({ message: "Failed to fetch product. Internal server error." });
+    }
+}
+
+/** Admin-only: full product including fullGallery for edit form */
+export const getAdminProductBySlug = async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const product = await Product.findOne({ slug });
+
+        if (!product) {
+            return res.status(404).json({ message: "Product not found." });
+        }
+
+        res.status(200).json(product);
+    } catch (error) {
+        console.error("Error fetching admin product by slug: ", error.message);
         res.status(500).json({ message: "Failed to fetch product. Internal server error." });
     }
 }

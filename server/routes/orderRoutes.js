@@ -1,6 +1,5 @@
 import express from "express";
 import {
-    createOrder,
     getAllOrders,
     getOrderStats,
 } from "../controllers/orderController.js";
@@ -9,9 +8,7 @@ import { adminMiddleware } from "../middleware/adminMiddleware.js";
 
 const router = express.Router();
 
-// POST /api/v1/orders — create order (public for demo checkout)
-router.post("/", createOrder);
-
+// Free public order creation removed — use Stripe/PayPal payment routes.
 // GET /api/v1/orders/stats — sales stats (admin only)
 // Must be registered before /:id-style routes if added later
 router.get("/stats", authMiddleware, adminMiddleware, getOrderStats);

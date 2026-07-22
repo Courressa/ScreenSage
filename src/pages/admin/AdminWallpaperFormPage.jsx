@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   createProduct,
-  getProductBySlug,
+  getAdminProductBySlug,
   getProducts,
   updateProduct,
 } from '../../api/api';
@@ -135,7 +135,7 @@ export default function AdminWallpaperFormPage() {
       setError('');
       try {
         if (isEdit) {
-          const product = await getProductBySlug(editSlug);
+          const product = await getAdminProductBySlug(editSlug);
           if (cancelled) return;
 
           setForm({

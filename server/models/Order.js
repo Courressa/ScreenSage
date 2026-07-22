@@ -32,11 +32,14 @@ const orderSchema = new mongoose.Schema(
         },
         paymentMethod: {
             type: String,
+            // "demo" kept for historical orders only — public free checkout removed
             enum: ["demo", "stripe", "paypal"],
-            default: "demo",
+            required: true,
         },
         /** PayPal Checkout order id (for capture + idempotency) */
-        paypalOrderId: { type: String, default: null, index: true, sparse: true },
+        paypalOrderId: { type: String, default: null },
+        /** Stripe Checkout Session id (for confirm + idempotency) */
+        stripeSessionId: { type: String, default: null },
         customerEmail: { type: String, required: true, trim: true, lowercase: true },
         // Optional link for signed-in users / future “My library”
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
@@ -45,6 +48,22 @@ const orderSchema = new mongoose.Schema(
     },
     {
         timestamps: true,
+    }
+);
+
+// One ScreenSage order per payment session (prevents double-fulfill from React remounts)
+orderSchema.index(
+    { stripeSessionId: 1 },
+    {
+        unique: true,
+        partialFilterExpression: { stripeSessionId: { $type: "string" } },
+    }
+);
+orderSchema.index(
+    { paypalOrderId: 1 },
+    {
+        unique: true,
+        partialFilterExpression: { paypalOrderId: { $type: "string" } },
     }
 );
 
