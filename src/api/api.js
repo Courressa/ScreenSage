@@ -52,8 +52,9 @@ export const loginAdmin = async (email, password) => {
 export const uploadMedia = async (formData) => {
     const response = await fetch(`${baseUrl}/products/upload`, {
         method: 'POST',
+        // Auth only — do NOT set Content-Type for FormData (browser sets boundary)
+        headers: getAuthHeaders(false),
         body: formData,
-        // Do NOT set Content-Type header for FormData (browser sets it automatically with boundary)
     });
 
     return parseResponse(response);
@@ -66,6 +67,17 @@ export const getProducts = async () => {
 
 export const getProductBySlug = async (slug) => {
     const response = await fetch(`${baseUrl}/products/${encodeURIComponent(slug)}`);
+    return parseResponse(response);
+};
+
+/** Admin edit form — includes fullGallery (not on public product endpoints) */
+export const getAdminProductBySlug = async (slug) => {
+    const response = await fetch(
+        `${baseUrl}/products/admin/${encodeURIComponent(slug)}`,
+        {
+            headers: getAuthHeaders(false),
+        }
+    );
     return parseResponse(response);
 };
 
@@ -100,19 +112,6 @@ export const deleteProduct = async (slug) => {
 export const getUsers = async () => {
     const response = await fetch(`${baseUrl}/users`, {
         headers: getAuthHeaders(false),
-    });
-    return parseResponse(response);
-};
-
-// ====================== Orders ======================
-
-export const createOrder = async (orderData) => {
-    const response = await fetch(`${baseUrl}/orders`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData),
     });
     return parseResponse(response);
 };

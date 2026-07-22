@@ -58,8 +58,8 @@ export default function AdminSalesPage() {
         <div>
           <h1 className="admin-page__title">Sales</h1>
           <p className="admin-page__subtitle">
-            Completed orders and revenue. Method shows demo, paypal, or stripe
-            depending on how the customer paid.
+            Completed orders and revenue. Method shows paypal or stripe (older
+            rows may still say demo from the free test checkout).
           </p>
         </div>
       </header>

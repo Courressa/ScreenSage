@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js'
 import {
-  createOrder,
   createPaypalOrder,
   capturePaypalOrder,
   createStripeCheckout,
@@ -14,14 +13,12 @@ import '../../styles/forms.css'
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function buildOrderItems(items) {
+  // Server re-prices and loads galleries from DB by slug — do not send fullGallery
   return items.map((item) => ({
     productId: item.id,
     slug: item.slug,
     title: item.title,
-    price: item.price,
     quantity: 1,
-    fullGallery: item.fullGallery || [],
-    coverImage: item.coverImage || '',
   }))
 }
 
@@ -61,33 +58,6 @@ export default function PaymentOptions({ items, total, onOrderComplete }) {
       total: orderTotal,
       paymentMethod: methodLabel,
     })
-  }
-
-  const handleDemoCheckout = async (event) => {
-    event.preventDefault()
-    setSubmitting(true)
-    setError('')
-
-    const trimmedEmail = email.trim()
-    if (!EMAIL_REGEX.test(trimmedEmail)) {
-      setError('Enter a valid email so we can send your wallpapers.')
-      setSubmitting(false)
-      return
-    }
-
-    try {
-      const result = await createOrder({
-        items: buildOrderItems(items),
-        customerEmail: trimmedEmail,
-        paymentMethod: 'demo',
-        status: 'completed',
-      })
-      completeLocalOrder(result, 'demo')
-    } catch (err) {
-      setError(err.message || 'Failed to complete test order')
-    } finally {
-      setSubmitting(false)
-    }
   }
 
   const handleStripeCheckout = async () => {
@@ -130,7 +100,7 @@ export default function PaymentOptions({ items, total, onOrderComplete }) {
         ))}
       </ul>
 
-      <form className="payment-options__form" onSubmit={handleDemoCheckout}>
+      <div className="payment-options__form">
         <div className="form-group">
           <label htmlFor="checkout-email">Email for delivery *</label>
           <input
@@ -242,7 +212,7 @@ export default function PaymentOptions({ items, total, onOrderComplete }) {
                     onError={(err) => {
                       console.error('PayPal button error:', err)
                       setSubmitting(false)
-                      setError('PayPal encountered an error. Try again or use test checkout.')
+                      setError('PayPal encountered an error. Try again or use Stripe.')
                     }}
                   />
                 </PayPalScriptProvider>
@@ -257,16 +227,8 @@ export default function PaymentOptions({ items, total, onOrderComplete }) {
               Pay with PayPal
             </button>
           )}
-
-          <button
-            type="submit"
-            className="btn btn--primary payment-options__btn"
-            disabled={submitting || count === 0}
-          >
-            {submitting ? 'Placing order…' : 'Complete order (test)'}
-          </button>
         </div>
-      </form>
+      </div>
 
       {error && (
         <p className="payment-options__note payment-options__note--error">
@@ -285,8 +247,7 @@ export default function PaymentOptions({ items, total, onOrderComplete }) {
               Stripe needs <code>VITE_STRIPE_KEY</code> (pk_test_…) and server{' '}
               <code>STRIPE_SECRET_KEY</code> (sk_test_…).
             </>
-          )}{' '}
-          Demo checkout still works without them.
+          )}
         </p>
       )}
       {(paypalClientId || stripeKey) && (

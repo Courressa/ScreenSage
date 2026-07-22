@@ -32,8 +32,9 @@ const orderSchema = new mongoose.Schema(
         },
         paymentMethod: {
             type: String,
+            // "demo" kept for historical orders only — public free checkout removed
             enum: ["demo", "stripe", "paypal"],
-            default: "demo",
+            required: true,
         },
         /** PayPal Checkout order id (for capture + idempotency) */
         paypalOrderId: { type: String, default: null },

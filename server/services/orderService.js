@@ -4,13 +4,28 @@ import User from "../models/User.js";
 import { sendPurchaseEmail } from "./emailService.js";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_QUANTITY_PER_LINE = 10;
+
+/**
+ * Default product lookup (overridable in unit tests).
+ * @param {string} slug
+ * @returns {Promise<object|null>}
+ */
+async function defaultFindProduct(slug) {
+    return Product.findOne({ slug }).lean();
+}
 
 /**
  * Normalize cart lines against live product prices/galleries in the DB.
+ * Never trusts client price or fullGallery — product must exist.
+ *
  * @param {Array} items
+ * @param {{ findProduct?: (slug: string) => Promise<object|null> }} [options]
  * @returns {Promise<{ normalizedItems: Array, totalAmount: number }>}
  */
-export async function normalizeOrderItems(items) {
+export async function normalizeOrderItems(items, options = {}) {
+    const findProduct = options.findProduct || defaultFindProduct;
+
     if (!Array.isArray(items) || items.length === 0) {
         const err = new Error("Order must include at least one item.");
         err.statusCode = 400;
@@ -20,36 +35,48 @@ export async function normalizeOrderItems(items) {
     const normalizedItems = [];
 
     for (const item of items) {
-        const quantity = Number(item.quantity) > 0 ? Number(item.quantity) : 1;
-        const price = Number(item.price);
-        const slug = item.slug;
-
-        if (!slug || !item.title || Number.isNaN(price)) {
-            const err = new Error("Each item requires slug, title, and a valid price.");
+        const slug = item?.slug;
+        if (!slug || typeof slug !== "string") {
+            const err = new Error("Each item requires a product slug.");
             err.statusCode = 400;
             throw err;
         }
 
-        const product = await Product.findOne({ slug }).lean();
-        const fullGallery = product?.fullGallery?.length
-            ? product.fullGallery
-            : Array.isArray(item.fullGallery)
-              ? item.fullGallery
-              : [];
+        const product = await findProduct(slug);
+        if (!product) {
+            const err = new Error(`Product not found for slug: ${slug}`);
+            err.statusCode = 400;
+            throw err;
+        }
+
+        const rawQty = Number(item.quantity);
+        const quantity =
+            Number.isFinite(rawQty) && rawQty > 0
+                ? Math.min(Math.floor(rawQty), MAX_QUANTITY_PER_LINE)
+                : 1;
+
+        const price = Number(product.price);
+        if (!Number.isFinite(price) || price < 0) {
+            const err = new Error(`Invalid price on product: ${slug}`);
+            err.statusCode = 400;
+            throw err;
+        }
 
         normalizedItems.push({
-            productId: item.productId ?? item.id ?? product?.id,
-            slug,
-            title: product?.title || item.title,
-            price: product?.price != null ? Number(product.price) : price,
+            productId: product.id,
+            slug: product.slug,
+            title: product.title,
+            price,
             quantity,
-            fullGallery,
-            coverImage: product?.coverImage || item.coverImage || "",
+            fullGallery: Array.isArray(product.fullGallery)
+                ? product.fullGallery
+                : [],
+            coverImage: product.coverImage || "",
         });
     }
 
     const totalAmount = normalizedItems.reduce(
-        (sum, item) => sum + item.price * item.quantity,
+        (sum, line) => sum + line.price * line.quantity,
         0
     );
 
@@ -58,11 +85,12 @@ export async function normalizeOrderItems(items) {
 
 /**
  * Persist order, link user, send delivery email, build download list.
+ * paymentMethod must be provided explicitly (no free "demo" default).
  */
 export async function fulfillOrder({
     items,
     customerEmail,
-    paymentMethod = "demo",
+    paymentMethod,
     status = "completed",
     paypalOrderId = null,
     stripeSessionId = null,
@@ -72,6 +100,12 @@ export async function fulfillOrder({
         const err = new Error(
             "A valid email is required so we can deliver your wallpapers."
         );
+        err.statusCode = 400;
+        throw err;
+    }
+
+    if (!paymentMethod || !["stripe", "paypal", "demo"].includes(paymentMethod)) {
+        const err = new Error("A valid payment method is required.");
         err.statusCode = 400;
         throw err;
     }
@@ -131,4 +165,4 @@ export async function fulfillOrder({
     };
 }
 
-export { EMAIL_REGEX };
+export { EMAIL_REGEX, MAX_QUANTITY_PER_LINE };
