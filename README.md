@@ -4,7 +4,7 @@
 
 Beautiful, original AI art for your screens. One-time purchases only.
 
-**Live Site Under Construction**: https://screensage.fyi
+**Live Site**: https://screensageai.com
 
 ## About
 
@@ -26,5 +26,5 @@ Users can suggest new collection ideas. Accepted suggestions get credited by nam
 - **Styling**: CSS
 - **Data**: `src/data/data.js`
 - **Payments**: Stripe Checkout + PayPal Buttons
-- **Hosting**: Vercel
+- **Hosting**: Render (`screensageai.com`)
 - **Routing**: React Router
