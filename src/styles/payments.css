@@ -59,8 +59,8 @@
   width: 100%;
 }
 
-.payment-options__paypal-hint {
-  margin: 0 0 0.5rem;
+.payment-options__email-hint {
+  margin: 0;
   font-size: 0.8rem;
   color: var(--text-muted);
   line-height: 1.4;

@@ -123,10 +123,20 @@ export default function PaymentOptions({ items, total, onOrderComplete }) {
         </div>
 
         <div className="payment-options__buttons">
+          {!emailValid && count > 0 && (
+            <p className="payment-options__email-hint">
+              Enter a valid email above to enable checkout.
+            </p>
+          )}
+
           {stripeReady ? (
             <button
               type="button"
-              className="btn btn--primary payment-options__btn"
+              className={
+                emailValid && !submitting && count > 0
+                  ? 'btn btn--primary payment-options__btn'
+                  : 'btn btn--primary payment-options__btn btn--disabled'
+              }
               disabled={!emailValid || submitting || count === 0}
               onClick={handleStripeCheckout}
             >
@@ -144,11 +154,6 @@ export default function PaymentOptions({ items, total, onOrderComplete }) {
 
           {paypalReady ? (
             <div className="payment-options__paypal">
-              {!emailValid && (
-                <p className="payment-options__paypal-hint">
-                  Enter your email above to enable PayPal.
-                </p>
-              )}
               <div
                 className={
                   emailValid && !submitting
