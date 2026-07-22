@@ -58,8 +58,8 @@ export default function AdminSalesPage() {
         <div>
           <h1 className="admin-page__title">Sales</h1>
           <p className="admin-page__subtitle">
-            Completed orders and revenue. Use the cart “Complete order (test)”
-            button until Stripe/PayPal are wired.
+            Completed orders and revenue. Method shows demo, paypal, or stripe
+            depending on how the customer paid.
           </p>
         </div>
       </header>

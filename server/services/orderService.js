@@ -65,6 +65,7 @@ export async function fulfillOrder({
     paymentMethod = "demo",
     status = "completed",
     paypalOrderId = null,
+    stripeSessionId = null,
 }) {
     const email = String(customerEmail || "").trim().toLowerCase();
     if (!email || !EMAIL_REGEX.test(email)) {
@@ -91,6 +92,7 @@ export async function fulfillOrder({
         customerEmail: email,
         user: userId,
         paypalOrderId: paypalOrderId || undefined,
+        stripeSessionId: stripeSessionId || undefined,
     });
 
     await order.save();

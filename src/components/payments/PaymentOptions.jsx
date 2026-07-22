@@ -4,6 +4,7 @@ import {
   createOrder,
   createPaypalOrder,
   capturePaypalOrder,
+  createStripeCheckout,
 } from '../../api/api'
 import { useCart } from '../../context/useCart'
 import { formatPrice } from '../../data/data'
@@ -36,28 +37,28 @@ export default function PaymentOptions({ items, total, onOrderComplete }) {
 
   const emailValid = EMAIL_REGEX.test(email.trim())
   const paypalReady = Boolean(paypalClientId) && count > 0
+  // Stripe Checkout is hosted — only secret is required on server; publishable key optional for future Elements
+  const stripeReady = Boolean(stripeKey) && count > 0
 
   const paypalOptions = useMemo(
     () => ({
       clientId: paypalClientId || 'test',
       currency: 'USD',
       intent: 'capture',
-      // Disable funding sources you don't need yet if desired
-      // disableFunding: 'credit,card',
     }),
     [paypalClientId]
   )
 
-  const completeLocalOrder = (result, methodLabel) => {
+  const completeLocalOrder = (result, methodLabel, orderTotal = total) => {
     clearCart()
     onOrderComplete?.({
       message: result.message || 'Order placed successfully.',
       emailSent: Boolean(result.emailSent),
       emailMessage: result.emailMessage || '',
-      customerEmail: email.trim().toLowerCase(),
+      customerEmail: email.trim().toLowerCase() || result.order?.customerEmail,
       order: result.order,
       downloads: result.downloads || [],
-      total,
+      total: orderTotal,
       paymentMethod: methodLabel,
     })
   }
@@ -85,6 +86,31 @@ export default function PaymentOptions({ items, total, onOrderComplete }) {
     } catch (err) {
       setError(err.message || 'Failed to complete test order')
     } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleStripeCheckout = async () => {
+    setError('')
+    const trimmedEmail = email.trim()
+    if (!EMAIL_REGEX.test(trimmedEmail)) {
+      setError('Enter a valid email before paying with Stripe.')
+      return
+    }
+
+    setSubmitting(true)
+    try {
+      const data = await createStripeCheckout({
+        items: buildOrderItems(items),
+        customerEmail: trimmedEmail,
+      })
+      if (!data?.url) {
+        throw new Error('Stripe did not return a checkout URL.')
+      }
+      // Leave cart intact until confirm on return — Stripe may cancel
+      window.location.href = data.url
+    } catch (err) {
+      setError(err.message || 'Could not start Stripe checkout.')
       setSubmitting(false)
     }
   }
@@ -127,13 +153,24 @@ export default function PaymentOptions({ items, total, onOrderComplete }) {
         </div>
 
         <div className="payment-options__buttons">
-          <button
-            type="button"
-            className="btn btn--primary payment-options__btn btn--disabled"
-            disabled
-          >
-            Pay with Stripe
-          </button>
+          {stripeReady ? (
+            <button
+              type="button"
+              className="btn btn--primary payment-options__btn"
+              disabled={!emailValid || submitting || count === 0}
+              onClick={handleStripeCheckout}
+            >
+              {submitting ? 'Redirecting…' : 'Pay with Stripe'}
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="btn btn--primary payment-options__btn btn--disabled"
+              disabled
+            >
+              Pay with Stripe
+            </button>
+          )}
 
           {paypalReady ? (
             <div className="payment-options__paypal">
@@ -157,7 +194,6 @@ export default function PaymentOptions({ items, total, onOrderComplete }) {
                       shape: 'rect',
                       label: 'paypal',
                       height: 45,
-                      // Soften sharp PayPal corners to match site radius
                       borderRadius: 8,
                     }}
                     disabled={!emailValid || submitting}
@@ -237,26 +273,26 @@ export default function PaymentOptions({ items, total, onOrderComplete }) {
           {error}
         </p>
       )}
-      {!paypalClientId && (
+      {(!paypalClientId || !stripeKey) && (
         <p className="payment-options__note">
-          Add <code>VITE_PAYPAL_CLIENT_ID</code> (and server{' '}
-          <code>PAYPAL_CLIENT_ID</code> / <code>PAYPAL_CLIENT_SECRET</code>) to
-          enable sandbox PayPal. Demo checkout still works without it.
-          {!stripeKey && ' Stripe wiring comes later.'}
+          {!paypalClientId && (
+            <>
+              PayPal needs <code>VITE_PAYPAL_CLIENT_ID</code> + server secrets.{' '}
+            </>
+          )}
+          {!stripeKey && (
+            <>
+              Stripe needs <code>VITE_STRIPE_KEY</code> (pk_test_…) and server{' '}
+              <code>STRIPE_SECRET_KEY</code> (sk_test_…).
+            </>
+          )}{' '}
+          Demo checkout still works without them.
         </p>
       )}
-      {paypalClientId && (
+      {(paypalClientId || stripeKey) && (
         <p className="payment-options__note">
-          PayPal is in <strong>sandbox</strong> mode when you use sandbox
-          credentials. Log in with a{' '}
-          <a
-            href="https://developer.paypal.com/dashboard/accounts"
-            target="_blank"
-            rel="noreferrer"
-          >
-            sandbox buyer account
-          </a>
-          , not your real PayPal login.
+          Test mode: use sandbox PayPal buyers / Stripe test cards
+          (e.g. <code>4242 4242 4242 4242</code>). No real charges with test keys.
         </p>
       )}
     </div>

@@ -129,13 +129,38 @@ export const capturePaypalCheckout = async (req, res) => {
             });
         }
 
-        const result = await fulfillOrder({
-            items,
-            customerEmail: email,
-            paymentMethod: "paypal",
-            status: "completed",
-            paypalOrderId,
-        });
+        let result;
+        try {
+            result = await fulfillOrder({
+                items,
+                customerEmail: email,
+                paymentMethod: "paypal",
+                status: "completed",
+                paypalOrderId,
+            });
+        } catch (err) {
+            if (err?.code === 11000 || err?.message?.includes("duplicate key")) {
+                const raced = await Order.findOne({ paypalOrderId }).lean();
+                if (raced) {
+                    const downloads = (raced.items || []).flatMap((item) =>
+                        (item.fullGallery || []).map((url, index) => ({
+                            title: item.title,
+                            slug: item.slug,
+                            url,
+                            filename: `${item.slug}-${index + 1}`,
+                        }))
+                    );
+                    return res.status(200).json({
+                        message: "Order already completed.",
+                        order: raced,
+                        emailSent: raced.emailSent,
+                        emailMessage: raced.emailMessage,
+                        downloads,
+                    });
+                }
+            }
+            throw err;
+        }
 
         res.status(201).json({
             message: "Order placed successfully.",

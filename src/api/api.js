@@ -141,6 +141,30 @@ export const capturePaypalOrder = async ({ paypalOrderId, items, customerEmail }
     return parseResponse(response);
 };
 
+// ====================== Stripe ======================
+
+export const createStripeCheckout = async ({ items, customerEmail }) => {
+    const response = await fetch(`${baseUrl}/payments/stripe/create`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ items, customerEmail }),
+    });
+    return parseResponse(response);
+};
+
+export const confirmStripeCheckout = async ({ sessionId }) => {
+    const response = await fetch(`${baseUrl}/payments/stripe/confirm`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ sessionId }),
+    });
+    return parseResponse(response);
+};
+
 export const getOrders = async () => {
     const response = await fetch(`${baseUrl}/orders`, {
         headers: getAuthHeaders(false),
