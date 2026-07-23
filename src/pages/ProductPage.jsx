@@ -86,11 +86,12 @@ export default function ProductPage() {
     : `${item.imageCount} wallpapers`;
 
   const handleSelectedDevice = (device) => {
-    setSelectedDevice(device);
+    setSelectedDevice(device)
+    setSelectedImageInd(0)
   }
 
   const handleSelectedImageInd = (image) => {
-    setSelectedImageInd(image);
+    setSelectedImageInd(image)
   }
 
   const moods = item.mood || []
@@ -121,6 +122,7 @@ export default function ProductPage() {
           title={item.title}
           onSelectDevice={handleSelectedDevice}
           selectedImageInd={selectedImageInd}
+          onSelectImageInd={handleSelectedImageInd}
           />
         <div>
           <div className="display-detail__purchase">
@@ -141,7 +143,10 @@ export default function ProductPage() {
         <UniqueImageList
           previews={item.devicePreviews}
           onSelectImageInd={handleSelectedImageInd}
-          selectedDevice={selectedDevice} />
+          selectedDevice={selectedDevice}
+          selectedImageInd={selectedImageInd}
+          title={item.title}
+        />
       </div>
     </div>
   )
