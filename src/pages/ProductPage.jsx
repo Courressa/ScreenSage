@@ -121,6 +121,7 @@ export default function ProductPage() {
           title={item.title}
           onSelectDevice={handleSelectedDevice}
           selectedImageInd={selectedImageInd}
+          onSelectImageInd={handleSelectedImageInd}
           />
         <div>
           <div className="display-detail__purchase">

@@ -155,6 +155,41 @@
   color: var(--text-muted);
 }
 
+
+.display-preview-gallery div {
+  max-width: 60rem;
+  margin-top: 2rem;
+  border-radius: var(--radius-md);
+  display: flex;
+  overflow-x: scroll;
+  overflow: auto;
+}
+
+.display-preview-gallery div img {
+  max-height: 20rem;
+  margin: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: inherit;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+
+}
+
+.display-preview-gallery div img:hover {
+  cursor: pointer;
+  border-color: var(--accent-border);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+}
+
+.arrow-display__none {
+  display: none;
+}
+
+.arrow-display__active {
+  display: flex;
+}
+
 .badge {
   display: inline-block;
   font-size: 0.75rem;

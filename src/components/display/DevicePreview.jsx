@@ -7,10 +7,31 @@ const DEVICES = [
   { key: 'desktop', label: 'Desktop' },
 ]
 
-export default function DevicePreview({ previews, title, onSelectDevice, selectedImageInd }) {
-  const [activeDevice, setActiveDevice] = useState('desktop')
+export default function DevicePreview({
+  previews,
+  title,
+  onSelectDevice,
+  selectedImageInd,
+  onSelectImageInd,
+}) {
+  const [activeDevice, setActiveDevice] = useState('desktop');
+  const activePreviews = previews?.[activeDevice] || [];
+  const currentIndex = selectedImageInd ?? 0;
 
-  console.log(selectedImageInd);
+  const next = () => {
+    if (!activePreviews.length) return;
+
+    const nextIndex = (currentIndex + 1) % activePreviews.length;
+    onSelectImageInd?.(nextIndex);
+  }
+
+  const prev = () => {
+    if (!activePreviews.length) return;
+
+    const prevIndex = (currentIndex - 1 + activePreviews.length) % activePreviews.length;
+    onSelectImageInd?.(prevIndex);
+  }
+
   return (
     <div className="device-preview">
       <div className="device-preview__tabs" role="tablist" aria-label="Device preview">
@@ -33,17 +54,27 @@ export default function DevicePreview({ previews, title, onSelectDevice, selecte
         ))}
       </div>
       <div className="device-preview__frame">
+        <button
+          className={
+            activePreviews.length > 1 ? "arrow-display__active" : "arrow-display__none"
+          }
+          onClick={prev}
+        >Arrow Left</button>
+
         <div className={`device-preview__screen device-preview__screen--${activeDevice}`}>
-          {previews[activeDevice][selectedImageInd] ? 
-          <img
-            src={previews[activeDevice][selectedImageInd]}
-            alt={`${title} preview on ${activeDevice}`}
-            className="device-preview__image"
-          /> :
-          <p>
-            Selected wallpaper is not available for this device.
-          </p>}
+          {activePreviews[currentIndex] ? (
+            <img
+              src={activePreviews[currentIndex]}
+              alt={`${title} preview on ${activeDevice}`}
+              className="device-preview__image"
+            />
+          ) : (
+            <p>
+              Selected wallpaper is not available for this device.
+            </p>
+          )}
         </div>
+        <button onClick={next}>Arrow Right</button>
       </div>
     </div>
   )
