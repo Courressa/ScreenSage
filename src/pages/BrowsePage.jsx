@@ -32,6 +32,7 @@ export default function BrowsePage() {
 
   // Read current values directly from URL (no local state + useEffect needed)
   const type = searchParams.get("type") || "all";
+  const deviceSelected = searchParams.get("device") || "";
   const categorySelected = searchParams.get("category") || "";
   const moodSelected = searchParams.get("mood") || "";
   const tagSelected = searchParams.get("tag") || "";
@@ -66,11 +67,18 @@ export default function BrowsePage() {
     const productCategories = products.map((p) => p.category);
     const productMoods = products.flatMap((p) => p.mood || []);
     const productTags = products.flatMap((p) => p.tags || []);
+    // Keep phone / tablet / desktop order when present in catalog
+    const deviceOrder = ["phone", "tablet", "desktop"];
+    const usedDevices = new Set(
+      products.flatMap((p) => p.devices || []).map((d) => String(d).toLowerCase())
+    );
+    const devices = deviceOrder.filter((d) => usedDevices.has(d));
 
     return {
       categories: collectUnique(productCategories),
       moods: collectUnique(productMoods),
       tags: collectUnique(productTags),
+      devices: devices.length > 0 ? devices : deviceOrder,
     };
   }, [products]);
 
@@ -79,6 +87,11 @@ export default function BrowsePage() {
     return products.filter((product) => {
       // Type filter
       if (type !== "all" && product.type !== type) return false;
+
+      // Device filter: product.devices includes selected (phone-only, full packs, combos)
+      if (deviceSelected && !listIncludesIgnoreCase(product.devices, deviceSelected)) {
+        return false;
+      }
 
       // Category filter
       if (categorySelected && !matchesIgnoreCase(product.category, categorySelected)) {
@@ -100,7 +113,15 @@ export default function BrowsePage() {
 
       return true;
     });
-  }, [products, type, categorySelected, moodSelected, tagSelected, hasVideo]);
+  }, [
+    products,
+    type,
+    deviceSelected,
+    categorySelected,
+    moodSelected,
+    tagSelected,
+    hasVideo,
+  ]);
 
   // Helper to update URL params (preserves other existing params)
   const updateParam = (key, value) => {
@@ -121,6 +142,8 @@ export default function BrowsePage() {
       <Filter
         type={type}
         setType={(newType) => updateParam("type", newType)}
+        deviceSelected={deviceSelected}
+        setDeviceSelected={(val) => updateParam("device", val)}
         categorySelected={categorySelected}
         setCategorySelected={(val) => updateParam("category", val)}
         moodSelected={moodSelected}
@@ -132,6 +155,7 @@ export default function BrowsePage() {
         categories={filterOptions.categories}
         moods={filterOptions.moods}
         tags={filterOptions.tags}
+        devices={filterOptions.devices}
       />
       <div className="filtered-results">
         <p>

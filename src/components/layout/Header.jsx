@@ -38,6 +38,14 @@ export default function Header() {
           Suggest
         </NavLink>
         <NavLink
+          to="/contact"
+          className={({ isActive }) =>
+            `site-header__link${isActive ? ' site-header__link--active' : ''}`
+          }
+        >
+          Contact
+        </NavLink>
+        <NavLink
           to="/cart"
           className={({ isActive }) =>
             `site-header__link site-header__cart${isActive ? ' site-header__link--active' : ''}`

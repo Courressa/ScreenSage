@@ -44,7 +44,7 @@
 
 .filter__form {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 1rem 1.15rem;
   align-items: end;
 }
@@ -156,7 +156,7 @@
   font-weight: 500;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1200px) {
   .filter__form {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }

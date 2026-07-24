@@ -1,5 +1,8 @@
 import "../../styles/filter.css";
 
+/** Canonical device sizes — matches Product.devices enum */
+export const DEVICE_FILTER_OPTIONS = ["phone", "tablet", "desktop"];
+
 const mapOptions = (options) => {
   return options.map((option) => (
     <option key={option.toLowerCase()} value={option}>
@@ -11,6 +14,8 @@ const mapOptions = (options) => {
 export function Filter({
   type,
   setType,
+  deviceSelected,
+  setDeviceSelected,
   categorySelected,
   setCategorySelected,
   moodSelected,
@@ -22,9 +27,11 @@ export function Filter({
   categories = [],
   moods = [],
   tags = [],
+  devices = DEVICE_FILTER_OPTIONS,
 }) {
   const hasActiveFilters =
     type !== "all" ||
+    Boolean(deviceSelected) ||
     Boolean(categorySelected) ||
     Boolean(moodSelected) ||
     Boolean(tagSelected) ||
@@ -32,6 +39,7 @@ export function Filter({
 
   const handleClear = () => {
     setType("all");
+    setDeviceSelected("");
     setCategorySelected("");
     setMoodSelected("");
     setTagSelected("");
@@ -61,6 +69,19 @@ export function Filter({
             <option value="all">All</option>
             <option value="individual">Individual</option>
             <option value="collection">Collection</option>
+          </select>
+        </div>
+
+        <div className="filter__group">
+          <label htmlFor="filter-device">Device</label>
+          <select
+            name="device"
+            id="filter-device"
+            value={deviceSelected}
+            onChange={(e) => setDeviceSelected(e.target.value)}
+          >
+            <option value="">All devices</option>
+            {mapOptions(devices)}
           </select>
         </div>
 

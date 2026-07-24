@@ -3,6 +3,7 @@ import Layout from './components/layout/Layout';
 import HomePage from './pages/HomePage';
 import ProductPage from './pages/ProductPage';
 import SuggestPage from './pages/SuggestPage';
+import ContactPage from './pages/ContactPage';
 import CartPage from './pages/CartPage';
 import BrowsePage from './pages/BrowsePage';
 import AdminProtectedRoute from './components/auth/AdminProtectedRoute';
@@ -20,6 +21,7 @@ export default function App() {
       <Route path="/" element={<Layout />}>
         <Route index element={<HomePage />} />
         <Route path="suggest" element={<SuggestPage />} />
+        <Route path="contact" element={<ContactPage />} />
         <Route path="cart" element={<CartPage />} />
         <Route path="products" element={<BrowsePage />} />
         <Route path="products/:slug" element={<ProductPage />} />

@@ -47,10 +47,11 @@ export default function SuggestionForm() {
           onChange={handleChange}
           autoComplete="name"
         />
-        <ValidationError 
+        <ValidationError
           field="name"
           prefix="Name"
           errors={state.errors}
+          className="form-error"
         />
       </div>
 
@@ -64,10 +65,11 @@ export default function SuggestionForm() {
           onChange={handleChange}
           autoComplete="email"
         />
-        <ValidationError 
+        <ValidationError
           field="email"
           prefix="Email"
           errors={state.errors}
+          className="form-error"
         />
       </div>
 
@@ -81,10 +83,11 @@ export default function SuggestionForm() {
           onChange={handleChange}
           placeholder="e.g. Neon Tokyo alleyways at midnight"
         />
-        <ValidationError 
+        <ValidationError
           field="idea"
           prefix="Idea"
           errors={state.errors}
+          className="form-error"
         />
       </div>
 
@@ -98,6 +101,8 @@ export default function SuggestionForm() {
           placeholder="Colors, moods, or styles you have in mind..."
         />
       </div>
+
+      <ValidationError errors={state.errors} className="form-error form-error--banner" />
 
       <button
         type="submit"

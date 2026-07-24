@@ -118,6 +118,13 @@ export default function OrderSuccess({ result, onDismiss }) {
         >
           Continue browsing
         </Link>
+        <Link
+          to="/contact"
+          className="btn btn--ghost"
+          onClick={() => onDismiss?.()}
+        >
+          Need help?
+        </Link>
       </div>
 
       {downloadNote && (

@@ -97,6 +97,137 @@
   margin-bottom: 1rem;
 }
 
+.payment-options__delivery {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+}
+
+.payment-options__delivery-label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 0.2rem;
+}
+
+.payment-options__delivery-email {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-h);
+  word-break: break-all;
+}
+
+.payment-options__edit-email {
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.15rem 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.payment-options__edit-email:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.payment-options__edit-email:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.payment-options__method-heading {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+.payment-options__method-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 480px) {
+  .payment-options__method-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.payment-options__method {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  width: 100%;
+  padding: 0.9rem 1rem;
+  text-align: left;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.payment-options__method:hover:not(:disabled) {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+}
+
+.payment-options__method--active {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+  box-shadow: 0 0 0 1px var(--accent-border);
+}
+
+.payment-options__method:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.payment-options__method-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.payment-options__method-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.payment-options__complete {
+  margin-top: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.payment-options__support-hint {
+  margin: 0.75rem 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.payment-options__support-hint a {
+  color: var(--accent);
+}
+
 .payment-options__note {
   margin-top: 1rem;
   padding: 0.75rem 1rem;
